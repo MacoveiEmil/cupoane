@@ -36,6 +36,8 @@ final class Plugin
             Admin\Columns::register_hooks();
             Admin\Reverify::register_hooks();
             Admin\Settings::register_hooks();
+            Admin\ImportPage::register_hooks();
+            Admin\QuickDeal::register_hooks();
         }
 
         if (defined('WP_CLI') && WP_CLI) {

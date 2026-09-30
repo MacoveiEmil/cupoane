@@ -6,6 +6,7 @@ namespace Cupons\Core\Admin;
 
 use Cupons\Core\Freshness\Cleanup;
 use Cupons\Core\Freshness\Scheduler;
+use Cupons\Core\Import\Importer;
 use Cupons\Core\Keys;
 use Cupons\Core\Support\Settings as S;
 
@@ -42,6 +43,23 @@ final class Settings
         $out['recheck_days'] = max(7, min(365, absint($in['recheck_days'] ?? 30)));
         $out['vote_min']     = max(1, min(100, absint($in['vote_min'] ?? 5)));
         $out['trust_cf_ip']  = empty($in['trust_cf_ip']) ? 0 : 1;
+
+        // Credențialele rețelelor: un câmp secret lăsat gol își păstrează valoarea salvată.
+        foreach (Importer::connectors() as $connector) {
+            foreach ($connector->settings_fields() as $key => $field) {
+                $value = trim(sanitize_text_field((string) ($in[$key] ?? '')));
+                if ($field['secret'] && $value === '') {
+                    continue;
+                }
+                $out[$key] = $value;
+            }
+            if (!empty($in['clear_' . $connector->id()])) {
+                foreach (array_keys($connector->settings_fields()) as $key) {
+                    $out[$key] = '';
+                }
+            }
+        }
+        delete_transient('cupons_2p_auth'); // datele de acces s-ar fi putut schimba
         return $out;
     }
 
@@ -81,6 +99,31 @@ final class Settings
                         </td>
                     </tr>
                 </table>
+
+                <h2>Rețele de afiliere</h2>
+                <p class="description">Datele de acces se păstrează doar în baza de date a site-ului (nu în cod). Câmpurile secrete nu se mai afișează după salvare; lasă-le goale ca să rămână neschimbate.</p>
+                <?php foreach (Importer::connectors() as $connector) : ?>
+                    <h3><?php echo esc_html($connector->label()); ?> <?php echo $connector->is_configured() ? '<span class="cupons-badge cupons-badge--ok">configurat</span>' : ''; ?></h3>
+                    <table class="form-table">
+                        <?php foreach ($connector->settings_fields() as $key => $field) :
+                            $saved = (string) ($s[$key] ?? ''); ?>
+                            <tr>
+                                <th><label for="cupons-<?php echo esc_attr($key); ?>"><?php echo esc_html($field['label']); ?></label></th>
+                                <td>
+                                    <input type="<?php echo $field['secret'] ? 'password' : 'text'; ?>" id="cupons-<?php echo esc_attr($key); ?>" class="regular-text" autocomplete="off"
+                                           name="<?php echo esc_attr(S::OPTION . '[' . $key . ']'); ?>"
+                                           value="<?php echo $field['secret'] ? '' : esc_attr($saved); ?>"
+                                           placeholder="<?php echo ($field['secret'] && $saved !== '') ? '•••••••• (salvat)' : ''; ?>">
+                                    <?php if ($field['help']) : ?><p class="description"><?php echo esc_html($field['help']); ?></p><?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        <?php if ($connector->is_configured()) : ?>
+                            <tr><th></th><td><label><input type="checkbox" name="<?php echo esc_attr(S::OPTION . '[clear_' . $connector->id() . ']'); ?>" value="1"> Șterge datele de acces <?php echo esc_html($connector->label()); ?></label></td></tr>
+                        <?php endif; ?>
+                    </table>
+                <?php endforeach; ?>
+
                 <?php submit_button('Salvează'); ?>
             </form>
 

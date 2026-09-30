@@ -75,7 +75,8 @@ Rulare manuală: butonul „Rulează curățarea acum” sau `wp cupons cleanup`
 
 ```bash
 wp cupons cleanup [--dry-run]   # curățarea zilnică, la cerere
-wp cupons import                # (Faza 3)
+wp cupons import                # import din toate rețelele configurate
+wp cupons import --network=profitshare --resume
 ```
 
 ## 6. LiteSpeed Cache și Cloudflare *(detalii complete în Faza 4)*
@@ -87,6 +88,23 @@ Esențial de la început:
 - **Cloudflare → Rules → Cache Rules**: *Bypass cache* pentru `URI Path starts with /go/` și `/wp-json/`.
 - Dacă site-ul e în spatele Cloudflare: bifează **Cupoane → Setări → Cloudflare**.
 
-## 7. Chei API
+## 7. Chei API și import
 
-Cheile rețelelor de afiliere se introduc doar în admin (**Cupoane → Setări**), niciodată în cod sau în repo. *(Faza 3)*
+Cheile se introduc doar în admin: **Cupoane → Setări → Rețele de afiliere**. Se salvează în baza de date, nu în cod.
+
+| Rețea | Ce îți trebuie | Unde le găsești |
+|---|---|---|
+| 2Performant | email + parolă cont afiliat + **user key** | network.2performant.com → Settings |
+| Profitshare | **API user** + **API key** | contul de afiliat Profitshare → secțiunea API |
+
+Apoi **Cupoane → Import → Importă acum** pentru fiecare rețea:
+
+1. Se importă programele (magazinele) la care ești acceptat. Cele al căror domeniu coincide cu URL-ul unui magazin se asociază automat.
+2. Restul apar la **Neasociate**: le legi de un magazin existent sau creezi unul nou.
+3. Se importă ofertele programelor asociate, ca **ciorne**, deduplicate după ID-ul extern. Le verifici și le publici.
+
+După asocieri, rulează din nou importul.
+
+**Adaugă deal rapid**: lipești URL-ul produsului, alegi magazinul, iar deeplink-ul se generează după rețeaua magazinului.
+
+Profitshare verifică ora cererii (toleranță 20 s), așa că serverul trebuie să aibă ora sincronizată. Pe hosting e standard.

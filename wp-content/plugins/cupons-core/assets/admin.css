@@ -11,4 +11,10 @@
 .cupons-form th { width: 180px; }
 .cupons-form label + label { margin-left: 12px; }
 .cupons-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; background: #fcf0e3; color: #8a4b00; font-size: 11px; }
+.cupons-badge--ok { background: #e3f4ec; color: #075c40; }
+.cupons-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin: 16px 0 24px; }
+.cupons-card { background: #fff; border: 1px solid #dcdcde; border-radius: 6px; padding: 12px 16px 16px; }
+.cupons-card h2 { margin-top: 4px; }
+.cupons-card form.cupons-inline { margin-right: 6px; }
+.cupons-status { color: #50575e; }
 .form-field .cupons-faq input, .form-field .cupons-faq textarea { width: 100%; }

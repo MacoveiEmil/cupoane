@@ -48,6 +48,31 @@
     }
   });
 
+  // Import: după „Importă acum”, pașii rulează automat (câte ~15 s fiecare) până la final.
+  document.addEventListener('DOMContentLoaded', function () {
+    var card = document.querySelector('[data-import][data-autorun]');
+    if (!card || !window.ajaxurl) return;
+    var network = card.getAttribute('data-import');
+    var nonce = card.querySelector('[data-nonce]').getAttribute('data-nonce');
+    var status = card.querySelector('[data-status]');
+    var cont = card.querySelector('[data-continue]');
+    if (cont) cont.disabled = true;
+
+    function step() {
+      var body = new URLSearchParams({ action: 'cupons_import_step', network: network, _ajax_nonce: nonce });
+      fetch(window.ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
+        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          if (!r || !r.success) throw new Error(r && r.data && r.data.message ? r.data.message : 'Eroare');
+          status.textContent = r.data.summary;
+          if (r.data.error) { status.textContent += ' — ' + r.data.error; if (cont) cont.disabled = false; return; }
+          if (r.data.running) { step(); } else { window.location.href = window.location.href.replace(/&run=[^&#]*/, ''); }
+        })
+        .catch(function (e) { status.textContent += ' — ' + e.message + ' (apasă „Continuă”)'; if (cont) cont.disabled = false; });
+    }
+    step();
+  });
+
   // Formularul „Adaugă magazin” (AJAX) nu reîncarcă pagina: golim câmpurile noastre după salvare.
   document.addEventListener('DOMContentLoaded', function () {
     var form = document.getElementById('addtag');

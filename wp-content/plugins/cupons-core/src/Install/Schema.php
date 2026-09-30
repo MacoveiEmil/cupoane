@@ -8,7 +8,7 @@ use Cupons\Core\Support\Tables;
 
 final class Schema
 {
-    public const VERSION = '1';
+    public const VERSION = '2'; // 2: programs.unique_code (quicklink 2Performant)
     public const OPTION  = 'cupons_db_version';
 
     public static function install(): void
@@ -52,6 +52,7 @@ final class Schema
   program_id varchar(64) NOT NULL,
   name varchar(190) NOT NULL DEFAULT '',
   site_url varchar(255) NOT NULL DEFAULT '',
+  unique_code varchar(64) NOT NULL DEFAULT '',
   term_id bigint(20) unsigned NOT NULL DEFAULT 0,
   last_seen datetime NULL,
   PRIMARY KEY  (network,program_id),

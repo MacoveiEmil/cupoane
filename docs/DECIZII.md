@@ -73,3 +73,21 @@ Fiecare decizie are motivul ei. Când se schimbă ceva, se actualizează aici.
 | În Rank Math, tipul entității trebuie setat pe **Organization** (wizard → „Organization”) | Implicit Rank Math folosește „Person”; atunci nu mai adăugăm noi Organization, ca să nu existe două entități. |
 | Magazinele/categoriile/etichetele cu < 3 oferte active: noindex + scoase din sitemap-ul Rank Math | Pagini subțiri. |
 | Măsurătorile Lighthouse locale se fac printr-un proxy care cache-uiește și comprimă HTML-ul | Docker pe Windows răspunde în 6–9 s fără cache; în producție LiteSpeed Cache servește HTML-ul din cache, comprimat. |
+
+## Import din rețele (Faza 3)
+
+Surse: exclusiv documentația oficială — [2Performant](https://doc.2performant.com/) și [Profitshare](https://doc.profitshare.com/affiliates/docs/). Niciun endpoint inventat.
+
+| Decizie | Motiv |
+|---|---|
+| **2Performant**: `POST /users/sign_in` (antet `user-key` + email/parolă) → `access-token`/`client`/`uid` din antetele răspunsului + `user.unique_code` (= `aff_code`); `GET /affiliate/programs?filter[relation]=accepted`; `GET /affiliate/advertiser_promotions?filter[affrequest_status]=accepted` | Doar programele și promoțiile la care contul e acceptat. Documentația cere antetele `access-token`, `client`, `uid` la cereri, dar nu descrie explicit răspunsul de sign-in: le citim din antetele lui (convenția API-ului). **De confirmat la primul import real.** |
+| Linkul ofertelor 2Performant = quicklink `event.2performant.com/events/click?ad_type=quicklink&aff_code=…&unique=…&redirect_to=…` spre `landing_page_link` | Formatul apare în documentația oficială; `unique` = `unique_code` al programului, salvat la importul programelor (coloana nouă `unique_code`, schema v2). |
+| **Profitshare**: semnătura `X-PS-Auth` = HMAC-SHA1(API key, `METODĂ + rută + "?" + query + "/" + API user + Date`) | Exact ca exemplul PHP din documentație. Ora serverului trebuie sincronizată (toleranță 20 s). |
+| Profitshare: voucherele se cer **per advertiser asociat** (`affiliate-vouchers/?advertiser_id=…&valid=1&page=…`) | Răspunsul voucherelor nu conține ID-ul magazinului, doar numele; filtrarea după `advertiser_id` e singura mapare sigură. Bonus: mai puține requesturi (limita e 60/min). |
+| Profitshare: ID extern = hash(advertiser + tip + cod + nume) | API-ul nu dă un ID de voucher. Datele de valabilitate nu intră în hash, ca o prelungire să fie o actualizare, nu o ofertă nouă. |
+| Deeplink Profitshare prin `POST affiliate-links/` | Singura metodă documentată de generare a linkurilor. |
+| Import pe pași de ~15 s, cu cursor salvat în `wp_options` și lock per rețea | Compatibil cu `max_execution_time` de pe shared hosting; o eroare (ex. limita de requesturi) nu pierde progresul („Continuă” / `--resume`). |
+| Ofertele noi = **ciornă**; cele existente își actualizează doar cod/date/link/condiții, fără schimbare de status; cele din Trash nu sunt readuse; cele deja expirate nu sunt importate | Controlul editorial rămâne la tine; curățarea zilnică nu e anulată de import. |
+| Asociere automată program ↔ magazin după domeniu (fără `www`), doar dacă e un singur magazin potrivit și nu are deja alt program | Mai puțină muncă manuală, fără asocieri greșite. Restul apar la „Neasociate”, cu opțiunea „Creează magazin nou”. |
+| Un magazin = o rețea + un ID de program | Conform modelului de date inițial. Dacă un magazin e în ambele rețele, alegi una. |
+| Credențialele se țin în opțiunea `cupons_settings` (baza de date), câmpurile secrete nu se mai afișează după salvare | Cerința: chei doar în admin, niciodată în cod/repo. |
