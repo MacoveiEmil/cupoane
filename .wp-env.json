@@ -3,9 +3,12 @@
   "core": null,
   "phpVersion": "8.2",
   "plugins": [
-    "./wp-content/plugins/cupons-core"
+    "./wp-content/plugins/cupons-core",
+    "https://downloads.wordpress.org/plugin/seo-by-rank-math.latest-stable.zip"
   ],
-  "themes": [],
+  "themes": [
+    "./wp-content/themes/cupons-theme"
+  ],
   "mappings": {
     "scripts": "./scripts"
   },

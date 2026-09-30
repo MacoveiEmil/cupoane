@@ -22,6 +22,7 @@ final class Installer
         PostTypes::register();
         Redirect::add_rules();
         Taxonomies::ensure_default_tags();
+        \Cupons\Core\Content\Pages::ensure();
 
         if (!get_option(self::SALT_OPTION)) {
             add_option(self::SALT_OPTION, wp_generate_password(64, true, true), '', false);

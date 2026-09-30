@@ -56,3 +56,20 @@ Fiecare decizie are motivul ei. Când se schimbă ceva, se actualizează aici.
 | La ștergerea expiratelor, „Actualizat la” al magazinului devine data curentă | Pagina s-a schimbat efectiv. |
 | `EMPTY_TRASH_DAYS` rămâne la valoarea implicită WordPress (30) | Exact cerința; nu trebuie setat nimic (doar să nu fie suprascris în `wp-config.php`). |
 | Validare la publicare: fără magazin sau cu expirare în trecut → rămâne ciornă | Nu se pot publica oferte invalide din greșeală. |
+
+## Temă și frontend (Faza 2)
+
+| Decizie | Motiv |
+|---|---|
+| Paginile structurale (`/magazine/`, `/categorii/`, `/deal-uri/`, `/top-oferte/`, `/cauta/`) și paginile statice sunt **pagini WordPress reale**, create automat de plugin | Rank Math le tratează nativ (titlu editabil, sitemap, canonical); paginarea `/deal-uri/page/2/` funcționează fără reguli proprii. Tema le afișează prin `page-{slug}.php`. Nu schimba slug-urile lor. |
+| Homepage = pagina „Acasă” setată ca prima pagină; **conținutul ei = textul SEO** de sub secțiuni | Textul SEO se editează direct din admin, cu editorul obișnuit. |
+| Căutarea: `/cauta/?q=` (noindex); `?s=` nativ face 301 către ea | Căutăm magazine și categorii, nu articole. |
+| Categoriile ofertelor includ și categoriile-părinte ale magazinului | Numărul de oferte pe o categorie-părinte e exact, fără dubluri. |
+| **Meniul mobil: panou dropdown peste conținut** (`<details>`, închis la click în afară / Esc) | Cerut explicit de proprietar după primul design; înlocuiește regula inițială „fără overlay”. Fără JS rămâne un `<details>` funcțional. |
+| Iconițe: un singur sprite SVG inline + `<use>` | HTML-ul homepage-ului a scăzut cu ~20 KB față de SVG-uri repetate în fiecare card. |
+| Culoarea de accent `#c2410c` (nu un portocaliu deschis) | Contrast WCAG AA cu text alb (Accessibility 100). |
+| CSS scris compact (o regulă pe linie) | Un singur fișier sub 25 KB fără pas de build (~6 KB comprimat). |
+| Cu Rank Math activ: template-urile noastre de title/description sunt implicite, un titlu setat manual în Rank Math are prioritate; schema lui e completată (SearchAction, BreadcrumbList, FAQPage, Organization), fără duplicate | Cerința „suprascriibile per pagină” + fără schema dublă. Fără Rank Math (sau înainte de wizard) pluginul scrie singur meta, canonical și schema. |
+| În Rank Math, tipul entității trebuie setat pe **Organization** (wizard → „Organization”) | Implicit Rank Math folosește „Person”; atunci nu mai adăugăm noi Organization, ca să nu existe două entități. |
+| Magazinele/categoriile/etichetele cu < 3 oferte active: noindex + scoase din sitemap-ul Rank Math | Pagini subțiri. |
+| Măsurătorile Lighthouse locale se fac printr-un proxy care cache-uiește și comprimă HTML-ul | Docker pe Windows răspunde în 6–9 s fără cache; în producție LiteSpeed Cache servește HTML-ul din cache, comprimat. |

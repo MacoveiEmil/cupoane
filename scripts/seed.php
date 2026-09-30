@@ -223,3 +223,6 @@ WP_CLI::success(sprintf(
     count($store_ids), $n, $stats['active'], $stats['expired'], $stats['stale']
 ));
 WP_CLI::log('Testează curățarea: wp cupons cleanup --dry-run, apoi wp cupons cleanup');
+
+// Local: Rank Math scrie meta abia după wizard sau „skip registration”.
+update_option('rank_math_registration_skip', 1);

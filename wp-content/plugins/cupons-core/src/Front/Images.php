@@ -1,0 +1,47 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Cupons\Core\Front;
+
+/**
+ * Dimensiuni de imagine pentru logo-uri și deal-uri; variantele generate sunt WebP.
+ */
+final class Images
+{
+    public const LOGO    = 'cupons-logo';     // 120×120, grilă homepage + header magazin
+    public const LOGO_SM = 'cupons-logo-sm';  // 56×56, carduri
+    public const DEAL    = 'cupons-deal';     // 320×320, carduri deal
+
+    public static function register_hooks(): void
+    {
+        add_action('after_setup_theme', [self::class, 'sizes'], 20);
+        add_filter('image_editor_output_format', [self::class, 'webp']);
+    }
+
+    public static function sizes(): void
+    {
+        add_image_size(self::LOGO, 120, 120, false);
+        add_image_size(self::LOGO_SM, 56, 56, false);
+        add_image_size(self::DEAL, 320, 320, false);
+    }
+
+    /** JPEG/PNG încărcate → dimensiunile generate se salvează WebP (dacă serverul suportă). */
+    public static function webp(array $formats): array
+    {
+        static $supported = null, $checking = false;
+        if ($checking) {
+            return $formats; // wp_image_editor_supports() reaplică acest filtru
+        }
+        if ($supported === null) {
+            $checking  = true;
+            $supported = wp_image_editor_supports(['mime_type' => 'image/webp']);
+            $checking  = false;
+        }
+        if ($supported) {
+            $formats['image/jpeg'] = 'image/webp';
+            $formats['image/png']  = 'image/webp';
+        }
+        return $formats;
+    }
+}

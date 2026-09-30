@@ -14,7 +14,14 @@ final class Plugin
         Content\PostTypes::register_hooks();
         Content\Meta::register_hooks();
         Content\Sync::register_hooks();
+        Content\Pages::register_hooks();
         Query\Offers::register_hooks();
+        Query\Archives::register_hooks();
+        Front\HeadCleanup::register_hooks();
+        Front\Images::register_hooks();
+        Front\SearchIndex::register_hooks();
+        Front\Seo::register_hooks();
+        Front\Schema::register_hooks();
         Routing\Redirect::register_hooks();
         Rest\VoteController::register_hooks();
         Freshness\Scheduler::register_hooks();

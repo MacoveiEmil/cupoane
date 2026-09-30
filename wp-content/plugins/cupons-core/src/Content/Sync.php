@@ -74,12 +74,28 @@ final class Sync
         }
     }
 
-    /** Categoriile unei oferte se copiază de pe magazinul ei. */
+    /**
+     * Categoriile unei oferte se copiază de pe magazinul ei, inclusiv părinții:
+     * astfel numărul de oferte al unei categorii-părinte e exact (fără dubluri).
+     */
     public static function sync_categories(int $post_id): void
     {
         $store = Links::store_of($post_id);
-        $cats  = $store ? self::store_categories($store->term_id) : [];
+        $cats  = $store ? self::store_categories_with_ancestors($store->term_id) : [];
         wp_set_object_terms($post_id, $cats, Keys::CATEGORY, false);
+    }
+
+    /** @return int[] */
+    public static function store_categories_with_ancestors(int $term_id): array
+    {
+        $out = [];
+        foreach (self::store_categories($term_id) as $cat) {
+            $out[] = $cat;
+            foreach (get_ancestors($cat, Keys::CATEGORY, 'taxonomy') as $parent) {
+                $out[] = (int) $parent;
+            }
+        }
+        return array_values(array_unique($out));
     }
 
     /** Resincronizează toate ofertele unui magazin (după schimbarea categoriilor lui). */
@@ -95,7 +111,7 @@ final class Sync
             'cupons_all'       => true,
             'tax_query'        => [['taxonomy' => Keys::STORE, 'terms' => $term_id]],
         ]);
-        $cats = self::store_categories($term_id);
+        $cats = self::store_categories_with_ancestors($term_id);
         foreach ($ids as $id) {
             wp_set_object_terms((int) $id, $cats, Keys::CATEGORY, false);
         }
