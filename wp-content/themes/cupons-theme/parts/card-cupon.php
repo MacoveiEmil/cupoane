@@ -17,15 +17,15 @@ $votes = $o['votes'];
 ?>
 <article class="card" id="<?php echo esc_attr($o['anchor']); ?>">
     <div class="card__badge card__badge--<?php echo esc_attr($o['badge']['kind']); ?>">
-        <?php if (!empty($args['show_logo']) && $store) : ?>
-            <span class="logo logo--sm"><?php echo View::logo($store, ['size' => Images::LOGO_SM, 'px' => 40]); // phpcs:ignore ?></span>
-        <?php endif; ?>
         <span class="card__value"><?php if (!empty($o['badge']['upto'])) : ?><small class="card__pre">până la</small><?php endif; ?><?php echo esc_html($o['badge']['text']); ?></span>
     </div>
 
     <div class="card__body">
         <?php if (!empty($args['show_logo']) && $store) : ?>
-            <a class="card__store" href="<?php echo esc_url((string) get_term_link($store)); ?>"><?php echo esc_html($store->name); ?></a>
+            <a class="card__store" href="<?php echo esc_url((string) get_term_link($store)); ?>">
+                <span class="logo logo--sm"><?php echo View::logo($store, ['size' => Images::LOGO, 'px' => 72, 'alt' => '']); // phpcs:ignore ?></span>
+                <?php echo esc_html($store->name); ?>
+            </a>
         <?php endif; ?>
         <<?php echo $h; ?> class="card__title"><?php echo esc_html($o['title']); ?></<?php echo $h; ?>>
         <p class="card__meta">

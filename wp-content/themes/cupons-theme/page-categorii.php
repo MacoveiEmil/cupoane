@@ -22,7 +22,7 @@ $tree = ct_ready() ? View::categories_tree() : [];
         <?php foreach ($tree as $c) : ?>
             <section class="cat-box">
                 <h2><a href="<?php echo esc_url($c['url']); ?>"><?php echo esc_html($c['term']->name); ?></a></h2>
-                <p class="cats__n"><?php echo (int) $c['stores']; ?> magazine · <?php echo esc_html(ct_offers_label($c['offers'])); ?></p>
+                <p class="cats__n"><?php echo esc_html(ct_plural((int) $c['stores'], 'magazin', 'magazine')); ?> · <?php echo esc_html(ct_offers_label($c['offers'])); ?></p>
                 <?php if ($c['children']) : ?>
                     <ul>
                         <?php foreach ($c['children'] as $ch) : ?>

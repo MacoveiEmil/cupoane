@@ -111,3 +111,14 @@ Surse: exclusiv documentația oficială — [2Performant](https://doc.2performan
 | Profitshare: toate voucherele din cont erau expirate la data testului | Corect: `valid=1` nu întoarce nimic, nu se importă nimic. |
 | Magazinele se creează automat din programele acceptate (setare „La import, creează automat magazine”, implicit activă), cu logo descărcat și convertit WebP | PNG-urile cu paletă rămân PNG (GD nu le poate converti). Categoriile vin cu numele din rețea (ex. „IT&C”, „Retail”): le poți redenumi/uni din Cupoane → Categorii. |
 | Titluri „Reduceri de până la 47%” | Marcaj „până la” (import automat + bifă în admin); badge-ul afișează „până la −47%”, nu „−47%”. |
+| Profitshare: statusurile lipsesc tot mai des (la un moment dat 1/59 răspunsuri) | Acceptare în 3 stări: „activ + aprobat” → magazin creat automat; necunoscut → lista „Neasociate” (decizie manuală); inactiv/neaprobat → ignorat. Statusurile văzute se memorează (`cupons_ps_statuses`), iar programele deja asociate rămân asociate. |
+
+## Redesign „premium” (runda 3)
+
+| Decizie | Motiv |
+|---|---|
+| Bază neutră (alb / gri foarte deschis, borduri fine), un singur accent violet, butoane principale în cerneală (`#14142a`) | Prea multe culori (violet + portocaliu + roz + pasteluri) dădeau aspect „ieftin”. |
+| Fără decupaje de bilet, bare colorate la titluri, gradient pe text | Detalii decorative care încărcau vizual. |
+| Containere de logo dreptunghiulare | Logo-urile reale din rețele sunt late (ex. 120×25); în pătrate deveneau minuscule. |
+| Logo-ul magazinului în rândul cu numele, pe card; badge-ul doar cu valoarea | Ierarhie clară: magazin → reducere → titlu → acțiune. |
+| Categoriile fără oferte active nu apar pe homepage; acord numeric corect („1 magazin”) | Secțiuni goale și greșeli mici arată neîngrijit. |

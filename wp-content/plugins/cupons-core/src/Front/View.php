@@ -165,7 +165,7 @@ final class View
 
         if ($id && wp_attachment_is_image($id)) {
             $attrs = [
-                'alt'      => $t->name,
+                'alt'      => $o['alt'] ?? $t->name, // '' când numele e scris deja lângă logo
                 'class'    => 'logo__img',
                 'loading'  => ($o['lazy'] ?? true) ? 'lazy' : 'eager',
                 'decoding' => 'async',
@@ -182,9 +182,10 @@ final class View
 
         $initial = mb_strtoupper(mb_substr(remove_accents($t->name), 0, 1));
         $hue     = crc32($t->slug) % 360;
+        $alt     = $o['alt'] ?? $t->name;
         return sprintf(
-            '<span class="logo__ph" style="--h:%d" role="img" aria-label="%s">%s</span>',
-            $hue, esc_attr($t->name), esc_html($initial)
+            '<span class="logo__ph" style="--h:%d" %s>%s</span>',
+            $hue, $alt === '' ? 'aria-hidden="true"' : 'role="img" aria-label="' . esc_attr($alt) . '"', esc_html($initial)
         );
     }
 

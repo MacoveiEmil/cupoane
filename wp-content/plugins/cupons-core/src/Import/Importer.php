@@ -101,8 +101,8 @@ final class Importer
                 if ($state['phase'] === 'programs') {
                     $page = $connector->programs($state['cursor']);
                     foreach ($page->items as $program) {
-                        // Doar programele la care contul e acceptat și care sunt active.
-                        if ($program instanceof Program && $program->accepted) {
+                        // Programele respinse / inactive se ignoră; cele cu status necunoscut ajung la „Neasociate”.
+                        if ($program instanceof Program && $program->accepted !== false) {
                             $state['stats']['programs']++;
                             if (Programs::upsert($program) > 0) {
                                 $state['stats']['mapped']++;

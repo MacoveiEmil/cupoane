@@ -38,7 +38,7 @@ final class Programs
             $match   = self::match_by_domain($p->url);
             $term_id = ($match && self::associate($p->network, $p->id, $match, false)) ? $match : 0;
         }
-        if ($term_id === 0 && $p->accepted && \Cupons\Core\Support\Settings::int('auto_stores')) {
+        if ($term_id === 0 && $p->accepted === true && \Cupons\Core\Support\Settings::int('auto_stores')) {
             $term_id = self::create_store($p);
         }
         return $term_id;

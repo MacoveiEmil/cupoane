@@ -22,14 +22,14 @@ $top       = View::top_offers(8);
 $exclusive = View::exclusive_offers(6, wp_list_pluck($top, 'ID'));
 $recent    = View::recent_offers(8, array_merge(wp_list_pluck($top, 'ID'), wp_list_pluck($exclusive, 'ID')));
 $deals     = View::deals_query(1, 6);
-$cats      = View::categories_tree();
+$cats      = array_values(array_filter(View::categories_tree(), static fn($c) => $c['offers'] > 0)); // doar categorii cu oferte
 $top_url   = ct_page_url('top-oferte');
 $stats     = View::stats();
 ?>
 <section class="intro">
     <div class="wrap">
         <h1 class="intro__title">Vouchere, reduceri și <span>cupoane verificate</span></h1>
-        <p class="intro__sub"><strong><?php echo (int) $stats['offers']; ?></strong> oferte active la <strong><?php echo (int) $stats['stores']; ?></strong> magazine · actualizat azi, <?php echo esc_html(wp_date('j F')); ?></p>
+        <p class="intro__sub"><strong><?php echo esc_html(ct_plural((int) $stats['offers'], 'ofertă activă', 'oferte active')); ?></strong> la <strong><?php echo esc_html(ct_plural((int) $stats['stores'], 'magazin', 'magazine')); ?></strong> · actualizat azi, <?php echo esc_html(wp_date('j F')); ?></p>
         <?php ct_search_form(true); ?>
     </div>
 </section>
@@ -95,7 +95,7 @@ $stats     = View::stats();
                 <?php foreach ($cats as $c) : ?>
                     <li>
                         <a href="<?php echo esc_url($c['url']); ?>"><?php echo esc_html($c['term']->name); ?></a>
-                        <span class="cats__n"><?php echo (int) $c['stores']; ?> magazine · <?php echo esc_html(ct_offers_label($c['offers'])); ?></span>
+                        <span class="cats__n"><?php echo esc_html(ct_plural((int) $c['stores'], 'magazin', 'magazine')); ?> · <?php echo esc_html(ct_offers_label($c['offers'])); ?></span>
                     </li>
                 <?php endforeach; ?>
             </ul>

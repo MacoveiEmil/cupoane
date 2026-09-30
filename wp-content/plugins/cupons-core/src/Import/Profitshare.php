@@ -45,11 +45,13 @@ final class Profitshare implements NetworkConnectorInterface
 
     public function programs(?string $cursor): Page
     {
-        // Răspunsul real e indexat după ID, iar statusurile sunt în commissions.affiliate_statuses
-        // (documentația le arată direct pe advertiser). Observat live: aproximativ jumătate din răspunsuri
-        // vin FĂRĂ statusuri, așa că facem până la 3 cereri și combinăm statusurile găsite.
-        $list     = [];
-        $statuses = [];
+        // Răspunsul real e indexat după ID; statusurile sunt în commissions.affiliate_statuses (documentația le
+        // arată direct pe advertiser). Observat live: API-ul le trimite INTERMITENT (uneori pentru 25/59, alteori 1/59).
+        // Deci: câteva încercări, statusurile văzute se memorează, iar programele fără status cunoscut
+        // nu se creează automat, ci apar la „Neasociate” (decizie manuală).
+        $list  = [];
+        $known = (array) get_option('cupons_ps_statuses', []);
+        $fresh = [];
         for ($try = 0; $try < 3; $try++) {
             $data = $this->request('GET', 'affiliate-advertisers/', []);
             foreach ((array) ($data['result'] ?? $data['data'] ?? []) as $a) {
@@ -59,18 +61,25 @@ final class Profitshare implements NetworkConnectorInterface
                 $list[(string) $a['id']] = $a;
                 $st = $a['commissions']['affiliate_statuses'] ?? $a['affiliate_statuses'] ?? null;
                 if (is_array($st)) {
-                    $statuses[(string) $a['id']] = $st;
+                    $fresh[(string) $a['id']] = $st;
                 }
             }
-            if (count($statuses) > 1) {
-                break; // răspuns complet
+            if (count($fresh) > 1) {
+                break;
             }
-            sleep(1);
+            sleep(2);
         }
+        if ($fresh) {
+            update_option('cupons_ps_statuses', $fresh + $known, false);
+        }
+        $statuses = $fresh + $known;
 
         $items = [];
         foreach ($list as $id => $a) {
-            $st   = (array) ($statuses[$id] ?? []);
+            $st       = $statuses[$id] ?? null;
+            $accepted = is_array($st)
+                ? (($st['active'] ?? '') === 'yes' && ($st['approved'] ?? '') === 'yes')
+                : (Programs::term_for($this->id(), (string) $id) > 0 ? true : null); // deja asociat = acceptat anterior
             $logo = (string) ($a['logo'] ?? '');
             $items[] = new Program(
                 network: $this->id(),
@@ -79,7 +88,7 @@ final class Profitshare implements NetworkConnectorInterface
                 url: (string) ($a['url'] ?? ''),
                 category: trim((string) ($a['category'] ?? '')),
                 logo: str_starts_with($logo, '//') ? 'https:' . $logo : $logo,
-                accepted: ($st['active'] ?? '') === 'yes' && ($st['approved'] ?? '') === 'yes',
+                accepted: $accepted,
             );
         }
         return new Page($items, null); // lista nu e paginată

@@ -244,3 +244,12 @@ function ct_toc(string $html): string
     }
     return $out . '</ol></details></nav>';
 }
+
+/** Acord numeric românesc: 1 magazin, 2–19 magazine, 20+ de magazine. */
+function ct_plural(int $n, string $one, string $many): string
+{
+    if ($n === 1) {
+        return '1 ' . $one;
+    }
+    return $n . ($n === 0 || $n % 100 < 20 ? ' ' : ' de ') . $many;
+}
