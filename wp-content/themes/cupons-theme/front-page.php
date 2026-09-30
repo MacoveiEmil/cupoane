@@ -1,11 +1,12 @@
 <?php
 /**
- * Homepage: titlu + căutare, magazine populare, top oferte, exclusive, recente, deal-uri, categorii, text SEO.
- * Fără carusele. Fiecare secțiune are „Vezi toate”.
+ * Homepage: titlu + căutare, magazine populare (3 carduri mari), top oferte, exclusive, recente,
+ * deal-uri, categorii, text SEO. Fără carusele. Fiecare secțiune are „Vezi toate”.
  */
 
 declare(strict_types=1);
 
+use Cupons\Core\Front\Images;
 use Cupons\Core\Front\View;
 
 get_header();
@@ -16,7 +17,7 @@ if (!ct_ready()) {
     return;
 }
 
-$popular   = View::popular_stores(12);
+$popular   = View::popular_stores(3); // primele 3 din „Ordine pe homepage”
 $top       = View::top_offers(8);
 $exclusive = View::exclusive_offers(6, wp_list_pluck($top, 'ID'));
 $recent    = View::recent_offers(8, array_merge(wp_list_pluck($top, 'ID'), wp_list_pluck($exclusive, 'ID')));
@@ -24,62 +25,33 @@ $deals     = View::deals_query(1, 6);
 $cats      = View::categories_tree();
 $top_url   = ct_page_url('top-oferte');
 $stats     = View::stats();
-$podium    = array_slice($popular, 0, 3); // primele 3 din „Ordine pe homepage”
 ?>
-<section class="hero">
-    <div class="wrap hero__grid">
-        <div class="hero__main">
-            <h1 class="hero__title">Vouchere, reduceri și <span class="hero__hl">cupoane verificate</span></h1>
-            <p class="hero__sub">Coduri de reducere pentru magazinele online din România, într-un singur loc. Copiezi codul, mergi în magazin, plătești mai puțin.</p>
-            <?php ct_search_form(true); ?>
-            <p class="hero__stats">
-                <span><strong><?php echo (int) $stats['offers']; ?></strong> oferte active</span>
-                <span><strong><?php echo (int) $stats['stores']; ?></strong> magazine</span>
-                <span>actualizat azi, <?php echo esc_html(wp_date('j F')); ?></span>
-            </p>
-            <?php if ($cats) : ?>
-                <ul class="hero__chips" aria-label="Categorii">
-                    <?php foreach (array_slice($cats, 0, 6) as $c) : ?>
-                        <li><a href="<?php echo esc_url($c['url']); ?>"><?php echo esc_html($c['term']->name); ?></a></li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php endif; ?>
-        </div>
-
-        <?php if ($podium) : ?>
-            <aside class="podium" aria-labelledby="h-podium">
-                <p class="podium__head" id="h-podium"><?php echo ct_icon('fire', 16); ?>Top magazine</p>
-                <ol class="podium__list">
-                    <?php foreach ($podium as $i => $store) :
-                        $sd   = View::store($store);
-                        $best = View::best_offer_label($store); ?>
-                        <li>
-                            <a class="podium__item" href="<?php echo esc_url($sd['url']); ?>">
-                                <span class="podium__rank" aria-hidden="true"><?php echo (int) $i + 1; ?></span>
-                                <span class="logo logo--sm"><?php echo View::logo($store, ['size' => \Cupons\Core\Front\Images::LOGO_SM, 'px' => 44, 'lazy' => false]); // phpcs:ignore ?></span>
-                                <span class="podium__txt">
-                                    <strong><?php echo esc_html($store->name); ?></strong>
-                                    <small><?php echo esc_html(ct_offers_label($sd['count'])); ?></small>
-                                </span>
-                                <?php if ($best !== '') : ?><span class="podium__deal"><?php echo esc_html($best); ?></span><?php endif; ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ol>
-                <a class="podium__all" href="<?php echo esc_url(ct_page_url('magazine')); ?>">Toate magazinele <?php echo ct_icon('chevron', 14); ?></a>
-            </aside>
-        <?php endif; ?>
+<section class="intro">
+    <div class="wrap">
+        <h1 class="intro__title">Vouchere, reduceri și <span>cupoane verificate</span></h1>
+        <p class="intro__sub"><strong><?php echo (int) $stats['offers']; ?></strong> oferte active la <strong><?php echo (int) $stats['stores']; ?></strong> magazine · actualizat azi, <?php echo esc_html(wp_date('j F')); ?></p>
+        <?php ct_search_form(true); ?>
     </div>
 </section>
 
 <div class="wrap">
     <?php if ($popular) : ?>
-        <section class="sec" aria-labelledby="s-pop">
+        <section class="sec sec--first" aria-labelledby="s-pop">
             <?php ct_section_head('Magazine populare', ct_page_url('magazine'), 's-pop'); ?>
-            <div class="tiles tiles--home">
-                <?php foreach ($popular as $i => $store) {
-                    ct_store_tile($store, $i >= 8);
-                } ?>
+            <div class="feat">
+                <?php foreach ($popular as $store) :
+                    $sd   = View::store($store);
+                    $best = View::best_offer_label($store); ?>
+                    <a class="feat__card" href="<?php echo esc_url($sd['url']); ?>">
+                        <span class="logo logo--xl"><?php echo View::logo($store, ['size' => Images::LOGO, 'px' => 88, 'lazy' => false]); // phpcs:ignore ?></span>
+                        <span class="feat__body">
+                            <span class="feat__name"><?php echo esc_html($store->name); ?></span>
+                            <span class="feat__count"><?php echo esc_html(ct_offers_label($sd['count'])); ?></span>
+                            <?php if ($best !== '') : ?><span class="feat__deal"><?php echo esc_html($best); ?></span><?php endif; ?>
+                        </span>
+                        <span class="feat__cta">Vezi codurile <?php echo ct_icon('chevron', 16); ?></span>
+                    </a>
+                <?php endforeach; ?>
             </div>
         </section>
     <?php endif; ?>
