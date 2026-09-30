@@ -1,0 +1,14 @@
+.cupons-media { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cupons-media__preview { width: 64px; height: 64px; object-fit: contain; border: 1px solid #dcdcde; background: #fff; }
+.cupons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px 16px; max-width: 900px; }
+.cupons-grid label { display: block; font-weight: 600; }
+.cupons-faq { max-width: 900px; }
+.cupons-faq__row { display: grid; gap: 4px; padding: 8px 0; border-bottom: 1px solid #f0f0f1; }
+.cupons-faq__row .button-link-delete { justify-self: start; }
+.cupons-checklist { margin: 0; max-height: 260px; overflow: auto; }
+.cupons-checklist ul { margin: 4px 0 4px 20px; }
+.cupons-inline { display: inline-block; margin-right: 16px; }
+.cupons-form th { width: 180px; }
+.cupons-form label + label { margin-left: 12px; }
+.cupons-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; background: #fcf0e3; color: #8a4b00; font-size: 11px; }
+.form-field .cupons-faq input, .form-field .cupons-faq textarea { width: 100%; }

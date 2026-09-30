@@ -1,0 +1,16 @@
+{
+  "name": "cupons-site",
+  "private": true,
+  "description": "Mediu local de dezvoltare (wp-env) pentru site-ul de cupoane.",
+  "scripts": {
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "env:reset": "wp-env clean all",
+    "wp": "wp-env run cli wp",
+    "seed": "bash scripts/seed.sh",
+    "build": "bash scripts/build-zip.sh"
+  },
+  "devDependencies": {
+    "@wordpress/env": "^10.0.0"
+  }
+}
