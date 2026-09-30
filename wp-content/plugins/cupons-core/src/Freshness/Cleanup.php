@@ -45,6 +45,8 @@ final class Cleanup
             ];
 
             if (!$dry) {
+                // Homepage-ul afișează data zilei: se regenerează zilnic, chiar dacă nu s-a schimbat nicio ofertă.
+                CachePurger::instance()->add_url(home_url('/'));
                 CachePurger::instance()->flush();
                 update_option(self::LOG_OPTION, ['time' => time()] + $report, false);
             }

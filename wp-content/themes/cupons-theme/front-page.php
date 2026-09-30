@@ -18,8 +18,8 @@ if (!ct_ready()) {
 
 $popular   = View::popular_stores(12);
 $top       = View::top_offers(8);
-$exclusive = View::exclusive_offers(6);
-$recent    = View::recent_offers(8);
+$exclusive = View::exclusive_offers(6, wp_list_pluck($top, 'ID'));
+$recent    = View::recent_offers(8, array_merge(wp_list_pluck($top, 'ID'), wp_list_pluck($exclusive, 'ID')));
 $deals     = View::deals_query(1, 6);
 $cats      = View::categories_tree();
 $top_url   = ct_page_url('top-oferte');

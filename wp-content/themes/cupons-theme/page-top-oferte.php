@@ -10,8 +10,8 @@ use Cupons\Core\Front\View;
 get_header();
 
 $top       = ct_ready() ? View::top_offers(24) : [];
-$exclusive = ct_ready() ? View::exclusive_offers(24) : [];
-$recent    = ct_ready() ? View::recent_offers(24) : [];
+$exclusive = ct_ready() ? View::exclusive_offers(24, wp_list_pluck($top, 'ID')) : [];
+$recent    = ct_ready() ? View::recent_offers(24, array_merge(wp_list_pluck($top, 'ID'), wp_list_pluck($exclusive, 'ID'))) : [];
 ?>
 <div class="wrap">
     <?php ct_breadcrumbs(); ?>

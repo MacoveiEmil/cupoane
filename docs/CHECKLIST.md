@@ -27,13 +27,13 @@
 - [ ] Mențiunea de afiliere în footer
 - [ ] Date demo șterse (`bash scripts/seed.sh reset` rulat doar local; pe producție nu există)
 
-## SEO *(Faza 2)*
+## SEO
 - [ ] Rank Math: sitemap activ, fără duplicare de schema
 - [ ] Meta title/description conform template-urilor
 - [ ] noindex: căutare, `/go/`, pagini cu < 3 oferte, paginări ≥ 2
 - [ ] Un singur H1 pe pagină, canonical corect
 
-## Performanță *(Faza 4)*
+## Performanță
 - [ ] Lighthouse mobil ≥ 95 (Performance, SEO, Accessibility) pe homepage și o pagină de magazin
 - [ ] ≤ ~10 requesturi la prima încărcare; CSS < 25 KB; JS < 10 KB
 - [ ] LiteSpeed Cache configurat; `/go/` și `/wp-json/cupons/` excluse
@@ -43,3 +43,16 @@
 - [ ] Cheile API doar în admin; `.env` / `wp-config.php` nu sunt în repo
 - [ ] XML-RPC dezactivat
 - [ ] Backup automat (cPanel / hosting) activ și testat
+
+## Rețele de afiliere
+- [ ] Cheile 2Performant / Profitshare salvate în Cupoane → Setări (apar „configurat”)
+- [ ] Primul import rulat fără erori; lista „Neasociate” rezolvată; import rulat din nou
+- [ ] Ciornele importate verificate și publicate
+- [ ] Un link /go/ al unei oferte importate duce corect în magazin (tracking-ul apare în contul rețelei)
+- [ ] „Adaugă deal rapid” generează deeplink pentru un magazin din fiecare rețea
+
+## Rank Math / cache
+- [ ] Wizard Rank Math parcurs, tip entitate: Organization; breadcrumbs Rank Math dezactivate
+- [ ] Sitemap Rank Math include Magazine, Categorii, Etichete; trimis în Google Search Console
+- [ ] LiteSpeed Cache: setările din README §6; Cloudflare: README §7
+- [ ] Antetele unei pagini de magazin arată `x-litespeed-cache: hit` la a doua încărcare

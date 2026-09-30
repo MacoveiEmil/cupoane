@@ -332,18 +332,20 @@ final class View
     }
 
     /** @return \WP_Post[] */
-    public static function exclusive_offers(int $limit = 6): array
+    public static function exclusive_offers(int $limit = 6, array $exclude = []): array
     {
+        // $exclude: oferte deja afișate mai sus pe pagină (fără ID-uri #c-{id} duplicate).
         return get_posts(self::active([
             'posts_per_page' => $limit,
+            'post__not_in'   => array_map('intval', $exclude),
             'meta_query'     => [['key' => Keys::M_EXCLUSIVE, 'value' => '1']],
         ]));
     }
 
     /** @return \WP_Post[] */
-    public static function recent_offers(int $limit = 8): array
+    public static function recent_offers(int $limit = 8, array $exclude = []): array
     {
-        return get_posts(self::active(['posts_per_page' => $limit]));
+        return get_posts(self::active(['posts_per_page' => $limit, 'post__not_in' => array_map('intval', $exclude)]));
     }
 
     /** Deal-uri active, paginate. */
