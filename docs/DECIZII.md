@@ -91,3 +91,11 @@ Surse: exclusiv documentația oficială — [2Performant](https://doc.2performan
 | Asociere automată program ↔ magazin după domeniu (fără `www`), doar dacă e un singur magazin potrivit și nu are deja alt program | Mai puțină muncă manuală, fără asocieri greșite. Restul apar la „Neasociate”, cu opțiunea „Creează magazin nou”. |
 | Un magazin = o rețea + un ID de program | Conform modelului de date inițial. Dacă un magazin e în ambele rețele, alegi una. |
 | Credențialele se țin în opțiunea `cupons_settings` (baza de date), câmpurile secrete nu se mai afișează după salvare | Cerința: chei doar în admin, niciodată în cod/repo. |
+
+## Redesign homepage (după feedback)
+
+| Decizie | Motiv |
+|---|---|
+| Paletă nouă: violet `#5b3df5` + cerneală `#14112e` (în locul verdelui) | Cerut de proprietar: aspect mai premium. Contrast AA păstrat (Accessibility 100). |
+| Hero pe 2 coloane: titlu + căutare + cifre reale (oferte active, magazine) și **Top magazine** (primele 3 din „Ordine pe homepage”) cu cea mai bună reducere activă | Mai atractiv decât un bloc doar cu text; toate cifrele sunt calculate din ofertele active, nimic inventat. |
+| Mesajul „ofertele expirate dispar automat” apare o singură dată (footer), nu în bara de sus / hero / footer | Repetat de 3 ori părea insistent; bara de sus a fost scoasă. |

@@ -3,19 +3,12 @@
 <head>
 <meta charset="<?php bloginfo('charset'); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b2e23">
+<meta name="theme-color" content="#14112e">
 <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?> data-api="<?php echo esc_url(rest_url('cupons/v1/vote')); ?>">
 <?php wp_body_open(); ?>
 <a class="skip" href="#main">Sari la conținut</a>
-<div class="topbar">
-    <ul>
-        <li><?php echo ct_icon('shield', 14); ?>Coduri verificate zilnic</li>
-        <li><?php echo ct_icon('clock', 14); ?>Ofertele expirate dispar automat</li>
-        <li><?php echo ct_icon('check', 14); ?>Fără cont, fără spam</li>
-    </ul>
-</div>
 <?php
 $ct_menu = static function (string $label): void {
     echo '<nav aria-label="' . esc_attr($label) . '"><ul class="nav__list">';

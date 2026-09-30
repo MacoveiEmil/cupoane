@@ -23,25 +23,52 @@ $recent    = View::recent_offers(8, array_merge(wp_list_pluck($top, 'ID'), wp_li
 $deals     = View::deals_query(1, 6);
 $cats      = View::categories_tree();
 $top_url   = ct_page_url('top-oferte');
+$stats     = View::stats();
+$podium    = array_slice($popular, 0, 3); // primele 3 din „Ordine pe homepage”
 ?>
 <section class="hero">
-    <div class="wrap">
-        <p class="hero__eyebrow"><?php echo ct_icon('bolt', 14); ?>Actualizat azi, <?php echo esc_html(wp_date('j F')); ?></p>
-        <h1 class="hero__title">Vouchere, reduceri și cupoane <em>verificate</em></h1>
-        <p class="hero__sub">Coduri de reducere pentru magazinele online din România. Le verificăm zilnic, iar pe cele expirate le scoatem automat.</p>
-        <?php ct_search_form(true); ?>
-        <?php if ($cats) : ?>
-            <ul class="hero__chips" aria-label="Categorii populare">
-                <?php foreach (array_slice($cats, 0, 6) as $c) : ?>
-                    <li><a href="<?php echo esc_url($c['url']); ?>"><?php echo esc_html($c['term']->name); ?></a></li>
-                <?php endforeach; ?>
-            </ul>
+    <div class="wrap hero__grid">
+        <div class="hero__main">
+            <h1 class="hero__title">Vouchere, reduceri și <span class="hero__hl">cupoane verificate</span></h1>
+            <p class="hero__sub">Coduri de reducere pentru magazinele online din România, într-un singur loc. Copiezi codul, mergi în magazin, plătești mai puțin.</p>
+            <?php ct_search_form(true); ?>
+            <p class="hero__stats">
+                <span><strong><?php echo (int) $stats['offers']; ?></strong> oferte active</span>
+                <span><strong><?php echo (int) $stats['stores']; ?></strong> magazine</span>
+                <span>actualizat azi, <?php echo esc_html(wp_date('j F')); ?></span>
+            </p>
+            <?php if ($cats) : ?>
+                <ul class="hero__chips" aria-label="Categorii">
+                    <?php foreach (array_slice($cats, 0, 6) as $c) : ?>
+                        <li><a href="<?php echo esc_url($c['url']); ?>"><?php echo esc_html($c['term']->name); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </div>
+
+        <?php if ($podium) : ?>
+            <aside class="podium" aria-labelledby="h-podium">
+                <p class="podium__head" id="h-podium"><?php echo ct_icon('fire', 16); ?>Top magazine</p>
+                <ol class="podium__list">
+                    <?php foreach ($podium as $i => $store) :
+                        $sd   = View::store($store);
+                        $best = View::best_offer_label($store); ?>
+                        <li>
+                            <a class="podium__item" href="<?php echo esc_url($sd['url']); ?>">
+                                <span class="podium__rank" aria-hidden="true"><?php echo (int) $i + 1; ?></span>
+                                <span class="logo logo--sm"><?php echo View::logo($store, ['size' => \Cupons\Core\Front\Images::LOGO_SM, 'px' => 44, 'lazy' => false]); // phpcs:ignore ?></span>
+                                <span class="podium__txt">
+                                    <strong><?php echo esc_html($store->name); ?></strong>
+                                    <small><?php echo esc_html(ct_offers_label($sd['count'])); ?></small>
+                                </span>
+                                <?php if ($best !== '') : ?><span class="podium__deal"><?php echo esc_html($best); ?></span><?php endif; ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ol>
+                <a class="podium__all" href="<?php echo esc_url(ct_page_url('magazine')); ?>">Toate magazinele <?php echo ct_icon('chevron', 14); ?></a>
+            </aside>
         <?php endif; ?>
-        <ul class="trust">
-            <li><?php echo ct_icon('shield', 18); ?>Oferte verificate zilnic</li>
-            <li><?php echo ct_icon('clock', 18); ?>Fără coduri expirate</li>
-            <li><?php echo ct_icon('check', 18); ?>Fără cont și fără spam</li>
-        </ul>
     </div>
 </section>
 

@@ -188,6 +188,47 @@ final class View
         );
     }
 
+    /**
+     * Cea mai bună ofertă activă a unui magazin, ca etichetă scurtă („până la −40%”, „până la 50 lei”, „Transport gratuit”).
+     * Doar din oferte reale active; '' dacă nu există valori numerice.
+     */
+    public static function best_offer_label(\WP_Term $store): string
+    {
+        $ids = get_posts([
+            'post_type'        => Keys::COUPON,
+            'posts_per_page'   => 100,
+            'fields'           => 'ids',
+            'no_found_rows'    => true,
+            'suppress_filters' => false,
+            'tax_query'        => [['taxonomy' => Keys::STORE, 'terms' => $store->term_id]],
+        ]);
+        $best = ['procent' => 0.0, 'lei' => 0.0, 'transport' => false];
+        foreach ($ids as $id) {
+            $type  = (string) get_post_meta($id, Keys::M_VALUE_TYPE, true);
+            $value = (float) get_post_meta($id, Keys::M_VALUE, true);
+            if ($type === 'transport') {
+                $best['transport'] = true;
+            } elseif (isset($best[$type]) && $value > $best[$type]) {
+                $best[$type] = $value;
+            }
+        }
+        $num = static fn(float $v) => str_replace('.', ',', rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.'));
+        if ($best['procent'] > 0) {
+            return 'până la −' . $num($best['procent']) . '%';
+        }
+        if ($best['lei'] > 0) {
+            return 'până la ' . $num($best['lei']) . ' lei';
+        }
+        return $best['transport'] ? 'Transport gratuit' : '';
+    }
+
+    /** Cifre reale pentru homepage: oferte active și magazine cu oferte. @return array{offers:int,stores:int} */
+    public static function stats(): array
+    {
+        $stores = Offers::counts_by_term(Keys::STORE);
+        return ['offers' => array_sum($stores), 'stores' => count(array_filter($stores))];
+    }
+
     /** Magazine similare: aceleași categorii, cu cele mai multe oferte active. @return \WP_Term[] */
     public static function similar_stores(\WP_Term $store, int $limit = 6): array
     {
