@@ -99,3 +99,15 @@ Surse: exclusiv documentația oficială — [2Performant](https://doc.2performan
 | Paletă nouă: violet `#5b3df5` + cerneală `#14112e` (în locul verdelui) | Cerut de proprietar: aspect mai premium. Contrast AA păstrat (Accessibility 100). |
 | Homepage: fără bloc hero mare; sus doar H1 + căutare (compact, fundal deschis), apoi „Magazine populare” = **3 carduri mari** (primele 3 din „Ordine pe homepage”) cu oferte active și cea mai bună reducere reală | Cerut de proprietar (înlocuiește grila de 12/8 logo-uri din spec). H1 și căutarea rămân deasupra fold-ului pentru SEO și utilizare. |
 | Mesajul „ofertele expirate dispar automat” apare o singură dată (footer), nu în bara de sus / hero / footer | Repetat de 3 ori părea insistent; bara de sus a fost scoasă. |
+
+## Import live — ce am aflat din API-urile reale (30 sept. 2026)
+
+| Observație | Ce am făcut |
+|---|---|
+| 2Performant: sign-in returnează `access-token`, `client`, `uid`, `token-type` în antete, exact cum presupusesem; listele au `metadata.pagination` (programe) și `pagination` (promoții) | Nimic de schimbat; ambele variante erau deja tratate. |
+| Profitshare: voucherele vin sub cheia **`data`**, nu `result` (cum arată documentația) | Conectorul acceptă ambele. |
+| Profitshare: statusurile de afiliere sunt în `commissions.affiliate_statuses`, iar **aproximativ jumătate din răspunsuri vin fără ele** | Până la 3 cereri, cu statusurile combinate; se importă doar programele active + aprobate. |
+| Profitshare: o valoare cu virgulă în query (`type=code,promotion`) strică semnătura HMAC | Nu trimitem astfel de parametri. |
+| Profitshare: toate voucherele din cont erau expirate la data testului | Corect: `valid=1` nu întoarce nimic, nu se importă nimic. |
+| Magazinele se creează automat din programele acceptate (setare „La import, creează automat magazine”, implicit activă), cu logo descărcat și convertit WebP | PNG-urile cu paletă rămân PNG (GD nu le poate converti). Categoriile vin cu numele din rețea (ex. „IT&C”, „Retail”): le poți redenumi/uni din Cupoane → Categorii. |
+| Titluri „Reduceri de până la 47%” | Marcaj „până la” (import automat + bifă în admin); badge-ul afișează „până la −47%”, nu „−47%”. |

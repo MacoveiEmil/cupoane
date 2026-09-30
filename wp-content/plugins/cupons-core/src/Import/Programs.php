@@ -38,7 +38,102 @@ final class Programs
             $match   = self::match_by_domain($p->url);
             $term_id = ($match && self::associate($p->network, $p->id, $match, false)) ? $match : 0;
         }
+        if ($term_id === 0 && $p->accepted && \Cupons\Core\Support\Settings::int('auto_stores')) {
+            $term_id = self::create_store($p);
+        }
         return $term_id;
+    }
+
+    /**
+     * Creează magazinul pentru un program acceptat: nume, URL, rețea + ID, categorie (după numele din rețea),
+     * iar logo-ul se descarcă ulterior (Importer, faza „logos”). Magazinul nu are încă texte: le completezi tu.
+     */
+    public static function create_store(Program $p): int
+    {
+        $name = self::clean_name($p->name, $p->url);
+        if ($name === '') {
+            return 0;
+        }
+
+        // Există deja un magazin cu același nume, fără program? Îl folosim pe acela.
+        $existing = get_term_by('name', $name, Keys::STORE);
+        if ($existing instanceof \WP_Term) {
+            return self::associate($p->network, $p->id, (int) $existing->term_id, false) ? (int) $existing->term_id : 0;
+        }
+
+        $res = wp_insert_term($name, Keys::STORE);
+        if (is_wp_error($res)) {
+            return 0;
+        }
+        $term_id = (int) $res['term_id'];
+        update_term_meta($term_id, Keys::T_URL, \Cupons\Core\Support\Sanitize::url(self::absolute($p->url)));
+        update_term_meta($term_id, Keys::T_HOME_ORDER, '0');
+        update_term_meta($term_id, Keys::T_UPDATED, \Cupons\Core\Support\Dates::today());
+        if ($p->logo !== '') {
+            update_term_meta($term_id, Keys::T_LOGO_SRC, esc_url_raw($p->logo));
+        }
+        if ($p->category !== '') {
+            $cat = term_exists($p->category, Keys::CATEGORY);
+            if (!$cat) {
+                $cat = wp_insert_term($p->category, Keys::CATEGORY);
+            }
+            if (is_array($cat) && !empty($cat['term_id'])) {
+                add_term_meta($term_id, Keys::T_CATS, (int) $cat['term_id']);
+            }
+        }
+        self::associate($p->network, $p->id, $term_id);
+        do_action('cupons_store_saved', $term_id);
+        return $term_id;
+    }
+
+    /**
+     * Descarcă logo-urile magazinelor create automat (în Media, cu dimensiunile WebP ale temei).
+     * @return int câte au mai rămas de descărcat
+     */
+    public static function fetch_logos(float $deadline): int
+    {
+        $terms = get_terms(['taxonomy' => Keys::STORE, 'hide_empty' => false, 'meta_key' => Keys::T_LOGO_SRC, 'number' => 50]);
+        if (!is_array($terms) || !$terms) {
+            return 0;
+        }
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+
+        $left = count($terms);
+        foreach ($terms as $t) {
+            if (microtime(true) > $deadline) {
+                break;
+            }
+            $src = (string) get_term_meta($t->term_id, Keys::T_LOGO_SRC, true);
+            delete_term_meta($t->term_id, Keys::T_LOGO_SRC); // o singură încercare; eșecul nu blochează importul
+            $left--;
+            if ($src === '' || get_term_meta($t->term_id, Keys::T_LOGO, true)) {
+                continue;
+            }
+            $id = media_sideload_image($src, 0, $t->name, 'id');
+            if (!is_wp_error($id) && $id) {
+                update_term_meta($t->term_id, Keys::T_LOGO, (int) $id);
+                update_post_meta((int) $id, '_wp_attachment_image_alt', $t->name);
+            }
+        }
+        return max(0, $left);
+    }
+
+    /** „answear.ro ” → „Answear.ro”; nume gol → domeniul. */
+    private static function clean_name(string $name, string $url): string
+    {
+        $name = trim(preg_replace('/\s+/u', ' ', wp_strip_all_tags($name)) ?? '');
+        if ($name === '') {
+            $name = self::host(self::absolute($url));
+        }
+        // Majusculă doar pentru numele scrise integral cu litere mici („answear.ro”); „eMAG.ro” rămâne neatins.
+        return $name === mb_strtolower($name) ? mb_strtoupper(mb_substr($name, 0, 1)) . mb_substr($name, 1) : $name;
+    }
+
+    private static function absolute(string $url): string
+    {
+        return ($url !== '' && !str_contains($url, '://')) ? 'https://' . ltrim($url, '/') : $url;
     }
 
     /** Magazinul asociat unui program (după term meta), sau 0. */

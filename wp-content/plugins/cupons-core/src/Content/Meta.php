@@ -45,6 +45,7 @@ final class Meta
             Keys::M_VALUE      => [Sanitize::class, 'amount'],
             Keys::M_VALUE_TYPE => static fn($v) => Sanitize::enum($v, array_keys(Keys::VALUE_TYPES), 'procent'),
             Keys::M_TERMS      => [Sanitize::class, 'rich'],
+            Keys::M_UPTO       => [Sanitize::class, 'flag'],
             Keys::M_LINK       => [Sanitize::class, 'url'],
         ];
 

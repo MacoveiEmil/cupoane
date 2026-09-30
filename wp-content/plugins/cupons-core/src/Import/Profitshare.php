@@ -45,12 +45,42 @@ final class Profitshare implements NetworkConnectorInterface
 
     public function programs(?string $cursor): Page
     {
-        $data  = $this->request('GET', 'affiliate-advertisers/', []);
-        $items = [];
-        foreach ((array) ($data['result'] ?? []) as $a) {
-            if (is_array($a) && !empty($a['id'])) {
-                $items[] = new Program($this->id(), (string) $a['id'], (string) ($a['name'] ?? ''), (string) ($a['url'] ?? ''));
+        // Răspunsul real e indexat după ID, iar statusurile sunt în commissions.affiliate_statuses
+        // (documentația le arată direct pe advertiser). Observat live: aproximativ jumătate din răspunsuri
+        // vin FĂRĂ statusuri, așa că facem până la 3 cereri și combinăm statusurile găsite.
+        $list     = [];
+        $statuses = [];
+        for ($try = 0; $try < 3; $try++) {
+            $data = $this->request('GET', 'affiliate-advertisers/', []);
+            foreach ((array) ($data['result'] ?? $data['data'] ?? []) as $a) {
+                if (!is_array($a) || empty($a['id'])) {
+                    continue;
+                }
+                $list[(string) $a['id']] = $a;
+                $st = $a['commissions']['affiliate_statuses'] ?? $a['affiliate_statuses'] ?? null;
+                if (is_array($st)) {
+                    $statuses[(string) $a['id']] = $st;
+                }
             }
+            if (count($statuses) > 1) {
+                break; // răspuns complet
+            }
+            sleep(1);
+        }
+
+        $items = [];
+        foreach ($list as $id => $a) {
+            $st   = (array) ($statuses[$id] ?? []);
+            $logo = (string) ($a['logo'] ?? '');
+            $items[] = new Program(
+                network: $this->id(),
+                id: (string) $a['id'],
+                name: trim((string) ($a['name'] ?? '')),
+                url: (string) ($a['url'] ?? ''),
+                category: trim((string) ($a['category'] ?? '')),
+                logo: str_starts_with($logo, '//') ? 'https:' . $logo : $logo,
+                accepted: ($st['active'] ?? '') === 'yes' && ($st['approved'] ?? '') === 'yes',
+            );
         }
         return new Page($items, null); // lista nu e paginată
     }
@@ -70,7 +100,7 @@ final class Profitshare implements NetworkConnectorInterface
         }
         $adv  = $ids[$i];
         $data = $this->request('GET', 'affiliate-vouchers/', ['advertiser_id' => $adv, 'valid' => 1, 'page' => max(1, $page)]);
-        $res  = (array) ($data['result'] ?? []);
+        $res  = (array) ($data['data'] ?? $data['result'] ?? []); // răspunsul real folosește „data”
 
         $items = [];
         foreach ((array) ($res['results'] ?? []) as $v) {
@@ -81,7 +111,7 @@ final class Profitshare implements NetworkConnectorInterface
             $code = $type === 'code' ? trim((string) ($v['code'] ?? '')) : '';
             $name = trim((string) ($v['name'] ?? ''));
             [$start, $end] = $this->valability((string) ($v['valability'] ?? ''));
-            [$value, $vtype] = Offer::parse_value((string) ($v['discount'] ?? '') . ' ' . $name);
+            [$value, $vtype, $upto] = Offer::parse_value((string) ($v['discount'] ?? '') . ' ' . $name);
 
             $items[] = new Offer(
                 ext_id: $this->id() . ':' . substr(md5($adv . '|' . $type . '|' . $code . '|' . $name), 0, 20),
@@ -95,6 +125,7 @@ final class Profitshare implements NetworkConnectorInterface
                 start: $start,
                 end: $end,
                 exclusive: (int) ($v['exclusivity'] ?? 0) === 1,
+                upto: $upto,
             );
         }
 
@@ -109,7 +140,9 @@ final class Profitshare implements NetworkConnectorInterface
             'name' => 'deal-' . substr(md5($url), 0, 8),
             'url'  => $url,
         ]]);
-        $ps = (string) ($data['result'][0]['ps_url'] ?? '');
+        $rows = (array) ($data['result'] ?? $data['data'] ?? []);
+        $first = reset($rows);
+        $ps    = is_array($first) ? (string) ($first['ps_url'] ?? '') : '';
         if ($ps === '') {
             throw new ImportException('Profitshare: generatorul de linkuri nu a returnat ps_url.');
         }

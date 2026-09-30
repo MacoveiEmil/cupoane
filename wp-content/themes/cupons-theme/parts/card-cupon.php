@@ -20,7 +20,7 @@ $votes = $o['votes'];
         <?php if (!empty($args['show_logo']) && $store) : ?>
             <span class="logo logo--sm"><?php echo View::logo($store, ['size' => Images::LOGO_SM, 'px' => 40]); // phpcs:ignore ?></span>
         <?php endif; ?>
-        <span class="card__value"><?php echo esc_html($o['badge']['text']); ?></span>
+        <span class="card__value"><?php if (!empty($o['badge']['upto'])) : ?><small class="card__pre">până la</small><?php endif; ?><?php echo esc_html($o['badge']['text']); ?></span>
     </div>
 
     <div class="card__body">

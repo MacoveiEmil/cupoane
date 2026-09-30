@@ -76,7 +76,7 @@ final class Importer
 
     public static function is_running(array $state): bool
     {
-        return in_array($state['phase'], ['programs', 'offers'], true);
+        return in_array($state['phase'], ['programs', 'offers', 'logos'], true);
     }
 
     /** Un pas de import. Reluabil: dacă apare o eroare, cursorul rămâne și „Continuă” pornește de acolo. */
@@ -101,7 +101,8 @@ final class Importer
                 if ($state['phase'] === 'programs') {
                     $page = $connector->programs($state['cursor']);
                     foreach ($page->items as $program) {
-                        if ($program instanceof Program) {
+                        // Doar programele la care contul e acceptat și care sunt active.
+                        if ($program instanceof Program && $program->accepted) {
                             $state['stats']['programs']++;
                             if (Programs::upsert($program) > 0) {
                                 $state['stats']['mapped']++;
@@ -115,6 +116,14 @@ final class Importer
                     continue;
                 }
 
+                if ($state['phase'] === 'logos') {
+                    if (Programs::fetch_logos($t0 + $budget) === 0) {
+                        $state['phase']    = 'done';
+                        $state['finished'] = time();
+                    }
+                    continue;
+                }
+
                 $page = $connector->offers($state['cursor'], Programs::map($network));
                 foreach ($page->items as $offer) {
                     if ($offer instanceof Offer) {
@@ -123,8 +132,7 @@ final class Importer
                 }
                 $state['cursor'] = $page->next;
                 if ($page->next === null) {
-                    $state['phase']    = 'done';
-                    $state['finished'] = time();
+                    $state['phase'] = 'logos';
                 }
             }
         } catch (ImportException $e) {
@@ -172,6 +180,7 @@ final class Importer
             Keys::M_CODE       => $o->code,
             Keys::M_VALUE      => $o->value,
             Keys::M_VALUE_TYPE => $o->value_type,
+            Keys::M_UPTO       => $o->upto ? '1' : '0',
             Keys::M_TERMS      => $o->terms,
             Keys::M_LINK       => $o->link,
             Keys::M_START      => $o->start,

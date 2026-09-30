@@ -90,7 +90,7 @@ final class ImportPage
     public static function summary(array $s): string
     {
         $st = $s['stats'];
-        $phases = ['idle' => 'Nu a rulat încă.', 'programs' => 'În curs: programe…', 'offers' => 'În curs: oferte…', 'done' => 'Terminat'];
+        $phases = ['idle' => 'Nu a rulat încă.', 'programs' => 'În curs: programe…', 'offers' => 'În curs: oferte…', 'logos' => 'În curs: logo-uri magazine…', 'done' => 'Terminat'];
         $text = $phases[$s['phase']] ?? $s['phase'];
         if ($s['phase'] === 'done' && $s['finished']) {
             $text .= ' la ' . wp_date('j M Y, H:i', (int) $s['finished']) . '.';

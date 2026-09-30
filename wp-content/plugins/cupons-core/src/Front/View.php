@@ -39,7 +39,7 @@ final class View
             'has_code'  => $code !== '',
             'code'      => $code,
             'masked'    => $code !== '' ? mb_substr($code, 0, 2) . '****' : '',
-            'badge'     => self::badge($vtype, $value, $code !== ''),
+            'badge'     => self::badge($vtype, $value, $code !== '') + ['upto' => $m(Keys::M_UPTO) === '1' && $vtype !== 'transport'],
             'exclusive' => $m(Keys::M_EXCLUSIVE) === '1',
             'expiry'    => self::expiry($m(Keys::M_EXPIRES)),
             'verified'  => Dates::human($m(Keys::M_VERIFIED)),

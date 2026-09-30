@@ -306,3 +306,4 @@ html:not(.js) .vote{visibility:hidden}
   .ftr__about{grid-column:auto}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;scroll-behavior:auto !important}}
+.card__pre{display:block;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;opacity:.85}

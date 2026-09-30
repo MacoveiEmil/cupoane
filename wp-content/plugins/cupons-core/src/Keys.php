@@ -39,6 +39,7 @@ final class Keys
     public const M_CODE       = '_cupons_cod';
     public const M_VALUE      = '_cupons_valoare';       // număr
     public const M_VALUE_TYPE = '_cupons_tip_reducere';  // procent | lei | transport
+    public const M_UPTO       = '_cupons_pana_la';       // '1' = „până la” (valoare maximă, nu fixă)
     public const M_TERMS      = '_cupons_conditii';
     public const M_LINK       = '_cupons_link';          // override link afiliere
 
@@ -61,6 +62,7 @@ final class Keys
     public const T_CATS       = '_cupons_categorii';   // rânduri multiple, câte un ID de categorie
     public const T_HOME_ORDER = '_cupons_ordine_home'; // int, 0 = nu apare pe homepage
     public const T_UPDATED    = '_cupons_actualizat';  // Y-m-d
+    public const T_LOGO_SRC   = '_cupons_logo_src';    // URL logo din rețea, de descărcat (import)
 
     public const DATE_MIN = '1970-01-01';
     public const DATE_MAX = '9999-12-31';

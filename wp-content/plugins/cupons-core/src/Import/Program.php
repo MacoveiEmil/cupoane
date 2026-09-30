@@ -13,6 +13,9 @@ final class Program
         public readonly string $name,
         public readonly string $url,
         public readonly string $unique_code = '',
+        public readonly string $category = '',
+        public readonly string $logo = '',   // URL absolut al logo-ului din rețea
+        public readonly bool $accepted = true, // contul e acceptat și programul e activ
     ) {
     }
 }

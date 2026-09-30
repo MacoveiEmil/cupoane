@@ -56,6 +56,7 @@ final class CouponBox
                 <td>
                     <input type="text" inputmode="decimal" id="cupons-value" name="cupons[value]" value="<?php echo esc_attr($m(Keys::M_VALUE)); ?>" class="small-text">
                     <?php Fields::select('cupons[value_type]', Keys::VALUE_TYPES, $m(Keys::M_VALUE_TYPE) ?: 'procent', 'cupons-value-type'); ?>
+                    <label class="cupons-inline"><input type="checkbox" name="cupons[upto]" value="1" <?php checked($m(Keys::M_UPTO), '1'); ?>> „până la” (reducere maximă, nu fixă)</label>
                 </td>
             </tr>
             <tr>
@@ -123,6 +124,7 @@ final class CouponBox
         update_post_meta($post_id, Keys::M_CODE, Sanitize::code($in['code'] ?? ''));
         update_post_meta($post_id, Keys::M_VALUE, Sanitize::amount($in['value'] ?? ''));
         update_post_meta($post_id, Keys::M_VALUE_TYPE, Sanitize::enum($in['value_type'] ?? '', array_keys(Keys::VALUE_TYPES), 'procent'));
+        update_post_meta($post_id, Keys::M_UPTO, Sanitize::flag($in['upto'] ?? ''));
         update_post_meta($post_id, Keys::M_TERMS, Sanitize::rich($in['terms'] ?? ''));
         update_post_meta($post_id, Keys::M_LINK, Sanitize::url($in['link'] ?? ''));
 

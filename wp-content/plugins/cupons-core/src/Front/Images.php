@@ -16,7 +16,7 @@ final class Images
     public static function register_hooks(): void
     {
         add_action('after_setup_theme', [self::class, 'sizes'], 20);
-        add_filter('image_editor_output_format', [self::class, 'webp']);
+        add_filter('image_editor_output_format', [self::class, 'webp'], 10, 3);
     }
 
     public static function sizes(): void
@@ -27,11 +27,15 @@ final class Images
     }
 
     /** JPEG/PNG încărcate → dimensiunile generate se salvează WebP (dacă serverul suportă). */
-    public static function webp(array $formats): array
+    public static function webp(array $formats, mixed $filename = null, mixed $mime = null): array
     {
         static $supported = null, $checking = false;
         if ($checking) {
             return $formats; // wp_image_editor_supports() reaplică acest filtru
+        }
+        // GD nu poate salva ca WebP un PNG cu paletă de culori: îl lăsăm PNG.
+        if ($mime === 'image/png' && is_string($filename) && self::is_palette_png($filename)) {
+            return $formats;
         }
         if ($supported === null) {
             $checking  = true;
@@ -43,5 +47,15 @@ final class Images
             $formats['image/png']  = 'image/webp';
         }
         return $formats;
+    }
+
+    /** Tipul de culoare din antetul IHDR al PNG-ului (octetul 25): 3 = paletă. */
+    private static function is_palette_png(string $file): bool
+    {
+        if (!is_readable($file)) {
+            return false;
+        }
+        $head = (string) file_get_contents($file, false, null, 0, 26);
+        return strlen($head) === 26 && ord($head[25]) === 3;
     }
 }

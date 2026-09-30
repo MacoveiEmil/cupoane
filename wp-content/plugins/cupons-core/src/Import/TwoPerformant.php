@@ -71,7 +71,16 @@ final class TwoPerformant implements NetworkConnectorInterface
             if ($url === '' && !empty($p['base_url'])) {
                 $url = 'https://' . ltrim((string) $p['base_url'], '/');
             }
-            $items[] = new Program($this->id(), (string) $p['id'], (string) ($p['name'] ?? ''), $url, (string) ($p['unique_code'] ?? ''));
+            $items[] = new Program(
+                network: $this->id(),
+                id: (string) $p['id'],
+                name: trim((string) ($p['name'] ?? '')),
+                url: $url,
+                unique_code: (string) ($p['unique_code'] ?? ''),
+                category: trim((string) ($p['category']['name'] ?? '')),
+                logo: (string) ($p['logo_path'] ?? ''),
+                accepted: ($p['status'] ?? 'active') === 'active',
+            );
         }
 
         return new Page($items, $this->next_page($data, $page, count($items)));
@@ -97,7 +106,7 @@ final class TwoPerformant implements NetworkConnectorInterface
             $landing    = (string) ($p['landing_page_link'] ?? '');
             $link       = ($landing !== '' && $unique !== '' && $aff !== '') ? $this->quicklink($landing, $unique, $aff) : '';
             $terms      = trim((string) ($p['customer_description'] ?? ''));
-            [$value, $type] = Offer::parse_value(($p['name'] ?? '') . ' ' . $terms);
+            [$value, $type, $upto] = Offer::parse_value(($p['name'] ?? '') . ' ' . $terms);
 
             $items[] = new Offer(
                 ext_id: $this->id() . ':' . $p['id'],
@@ -110,6 +119,7 @@ final class TwoPerformant implements NetworkConnectorInterface
                 link: $link,
                 start: Offer::local_date((string) ($p['promotion_start'] ?? '')),
                 end: Offer::local_date((string) ($p['promotion_end'] ?? '')),
+                upto: $upto,
             );
         }
 
