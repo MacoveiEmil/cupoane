@@ -1,0 +1,31 @@
+/* Tema C — „Simplu”: listă aerisită, fără cutii, linii fine. Calmă, rapidă de parcurs. */
+:root {
+  --bg: #fff; --surface: #fff; --text: #0f1115; --muted: #626873; --line: #ececee;
+  --accent: #0f1115; --accent-text: #fff; --accent-soft: #f4f4f5; --link: #0f1115;
+  --badge-bg: transparent; --badge-text: #0a7d4a; --ok: #0a7d4a;
+  --radius: 14px; --radius-sm: 999px;
+  --hdr-bg: #fff; --ftr-bg: #f7f7f8; --ftr-text: #4b505a; --ftr-head: #0f1115;
+}
+.logo-mark__icon { border-radius: 50%; }
+.intro { border: 0; padding-top: 26px; }
+.intro__title { font-size: 1.45rem; letter-spacing: -.03em; }
+@media (min-width: 860px) { .intro__title { font-size: 1.9rem; } }
+.search__row { border-radius: 99px; background: #f4f4f5; border-color: transparent; }
+.search__btn { margin: 4px; width: 40px; border-radius: 50%; }
+.search--big .search__btn { width: 44px; }
+.sec__head { padding-bottom: 10px; border-bottom: 1px solid var(--text); }
+/* Oferte ca rânduri de listă */
+.cards { gap: 0; }
+.card { min-height: 0; padding: 18px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; }
+@media (min-width: 720px) { .card { padding: 20px 0; } }
+.sticker { align-items: flex-start; padding: 0; min-height: 0; text-align: left; }
+.sticker b { font-size: 1.45rem; }
+.sticker--ship, .sticker--plain { color: var(--muted); }
+@media (min-width: 720px) { .sticker { min-height: 0; } .sticker b { font-size: 1.7rem; } }
+.btn { border-radius: 99px; }
+.btn--code { border-style: solid; border-color: var(--line); background: #f4f4f5; }
+.btn--code .btn__label { border-radius: 99px 0 0 99px; }
+.brand { border-color: var(--line); border-radius: 99px; min-height: 52px; }
+.cats li, .info div, .deal, .store, .box, .az a, .pills a, .pager a, .pager span { box-shadow: none; }
+.store { padding-left: 0; padding-right: 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; }
+.tag { background: #f4f4f5; }

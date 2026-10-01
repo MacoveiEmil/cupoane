@@ -9,14 +9,14 @@
             @if ($store->logoUrl())
                 <img src="{{ $store->logoUrl() }}" alt="{{ $store->name }}" width="200" height="80" fetchpriority="high" decoding="async">
             @else
-                <span class="shop__ph" aria-hidden="true">{{ mb_strtoupper(mb_substr($store->name, 0, 1)) }}</span>
+                <span class="brand__ph" aria-hidden="true">{{ mb_strtoupper(mb_substr($store->name, 0, 1)) }}</span>
             @endif
         </span>
         <div class="store__main">
             <h1>Cod reducere {{ $store->name }}</h1>
             <p class="store__meta">
-                <span class="chip chip--mint"><b>{{ \App\Support\Seo::plural($coupons->count(), 'ofertă activă', 'oferte active') }}</b></span>
-                <span class="chip">Actualizat la {{ \App\Support\Day::human($store->updated_on ?? \App\Support\Day::today()) }}</span>
+                <span><b>{{ \App\Support\Seo::plural($coupons->count(), 'ofertă activă', 'oferte active') }}</b></span>
+                <span>Actualizat la {{ \App\Support\Day::human($store->updated_on ?? \App\Support\Day::today()) }}</span>
             </p>
         </div>
         <a class="btn btn--go store__go" href="{{ $store->goUrl() }}" target="_blank" rel="sponsored nofollow noopener">Mergi la magazin <svg width="16" height="16"><use href="#i-out"/></svg></a>
@@ -65,7 +65,7 @@
     @if ($similar->isNotEmpty())
         <section class="sec" aria-labelledby="s-sim">
             <div class="sec__head"><h2 id="s-sim">Magazine similare</h2></div>
-            <div class="shops">@foreach ($similar->take(3) as $i => $s) @include('partials.store-card', ['s' => $s, 'tone' => $i % 3 + 1]) @endforeach</div>
+            <ul class="brands">@foreach ($similar as $s) @include('partials.brand', ['s' => $s]) @endforeach</ul>
         </section>
     @endif
 </div>

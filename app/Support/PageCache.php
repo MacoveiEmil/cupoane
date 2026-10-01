@@ -22,9 +22,7 @@ final class PageCache
     /** Cheia include versiunea CSS/JS: după o schimbare de design, paginile se regenerează singure. */
     public static function key(string $url): string
     {
-        $assets = (int) @filemtime(resource_path('css/site.css')).'-'.(int) @filemtime(public_path('js/site.js'));
-
-        return 'p:'.sha1($url.'|'.$assets);
+        return 'p:'.sha1($url.'|'.Assets::version());
     }
 
     public static function flush(): void

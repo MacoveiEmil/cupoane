@@ -15,14 +15,15 @@
 
 <meta property="og:url" content="{{ $seo->canonical }}">
 <meta property="og:site_name" content="{{ config('app.name') }}">
-<meta name="theme-color" content="#fff6ea">
+@php($theme = \App\Support\Assets::theme())
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<style>{!! \App\Support\Assets::css() !!}</style>
+<style>{!! \App\Support\Assets::css($theme) !!}</style>
 <script>document.documentElement.classList.add('js')</script>
 <script type="application/ld+json">{!! json_encode($seo->schema(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
 <script src="{{ \App\Support\Assets::js() }}" defer></script>
 </head>
-<body>
+<body class="t-{{ $theme }}">
 @include('partials.icons')
 <a class="skip" href="#main">Sari la conținut</a>
 

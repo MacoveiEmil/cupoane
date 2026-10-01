@@ -1,38 +1,35 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="hero">
-    <div class="wrap hero__in">
-        <p class="hero__kicker">Actualizat azi, {{ \App\Support\Day::dayMonth() }}</p>
-        @php([$h1a, $h1b] = array_pad(explode(' și ', $site['hero_title'], 2), 2, null))
-        <h1 class="hero__title">@if ($h1b){{ $h1a }} și <mark>{{ $h1b }}</mark>@else{{ $site['hero_title'] }}@endif</h1>
-        <p class="hero__sub">{{ $site['hero_subtitle'] }}</p>
-        @include('partials.search', ['big' => true])
-        <ul class="hero__stats">
-            <li class="chip chip--mint"><b>{{ \App\Support\Seo::plural($stats['offers'], 'ofertă activă', 'oferte active') }}</b></li>
-            <li class="chip chip--sun"><b>{{ \App\Support\Seo::plural($stats['stores'], 'magazin', 'magazine') }}</b></li>
-            <li class="chip chip--lilac">fără cont, fără spam</li>
-        </ul>
+{{-- Sus doar titlul și căutarea: ofertele încep imediat dedesubt. --}}
+<section class="intro">
+    <div class="wrap">
+        <div class="intro__in">
+            <div>
+                <h1 class="intro__title">{{ $site['hero_title'] }}</h1>
+                <p class="intro__meta"><b>{{ \App\Support\Seo::plural($stats['offers'], 'ofertă activă', 'oferte active') }}</b> la <b>{{ \App\Support\Seo::plural($stats['stores'], 'magazin', 'magazine') }}</b> · actualizat azi, {{ \App\Support\Day::dayMonth() }}</p>
+            </div>
+            @include('partials.search', ['big' => true])
+        </div>
     </div>
 </section>
 
 <div class="wrap">
-    @if ($popular->isNotEmpty())
-        <section class="sec" aria-labelledby="s-pop">
-            <div class="sec__head"><h2 id="s-pop">Magazine populare</h2><a class="more" href="{{ route('stores') }}">Toate magazinele <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
-            <div class="shops">
-                @foreach ($popular as $i => $s)
-                    @include('partials.store-card', ['s' => $s, 'tone' => $i % 3 + 1, 'eager' => true])
-                @endforeach
-            </div>
-        </section>
-    @endif
+    @php($lists = [['s-top', 'Top oferte', $top, route('top')], ['s-ex', 'Coduri exclusive', $exclusive, route('top').'#exclusive'], ['s-new', 'Adăugate recent', $recent, route('top').'#recente']])
 
-    @foreach ([['s-top', 'Top oferte', $top, route('top')], ['s-ex', 'Coduri exclusive', $exclusive, route('top').'#exclusive'], ['s-new', 'Adăugate recent', $recent, route('top').'#recente']] as [$id, $title, $list, $more])
+    @foreach ($lists as $i => [$id, $title, $list, $more])
         @if ($list->isNotEmpty())
             <section class="sec" aria-labelledby="{{ $id }}">
                 <div class="sec__head"><h2 id="{{ $id }}">{{ $title }}</h2><a class="more" href="{{ $more }}">Vezi toate <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
                 <div class="cards">@foreach ($list as $c) @include('partials.coupon', ['c' => $c]) @endforeach</div>
+            </section>
+        @endif
+
+        {{-- Magazinele populare, discret, după primul grup de oferte. --}}
+        @if ($i === 0 && $popular->isNotEmpty())
+            <section class="sec" aria-labelledby="s-pop">
+                <div class="sec__head"><h2 id="s-pop">Magazine populare</h2><a class="more" href="{{ route('stores') }}">Toate <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
+                <ul class="brands">@foreach ($popular as $s) @include('partials.brand', ['s' => $s]) @endforeach</ul>
             </section>
         @endif
     @endforeach

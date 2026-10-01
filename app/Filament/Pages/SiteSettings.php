@@ -62,6 +62,11 @@ class SiteSettings extends Page
                     Textarea::make('footer_about')->label('Text „Despre” din footer')->rows(2)->maxLength(300),
                     Textarea::make('affiliate_note')->label('Mențiunea de afiliere (footer)')->rows(2)->maxLength(300),
                 ]),
+                Tab::make('Aspect')->icon(Heroicon::OutlinedSwatch)->schema([
+                    \Filament\Forms\Components\Radio::make('theme')->label('Tema site-ului')->required()
+                        ->options(\App\Support\Assets::THEMES)
+                        ->helperText('Poți previzualiza orice temă fără să o activezi: adaugă ?tema=a, ?tema=b sau ?tema=c la adresa unei pagini.'),
+                ]),
                 Tab::make('Reguli')->icon(Heroicon::OutlinedAdjustmentsHorizontal)->schema([
                     TextInput::make('recheck_days')->label('Reverificare oferte fără expirare (zile)')->numeric()->minValue(7)->maxValue(365)->required()
                         ->helperText('După acest interval fără verificare, oferta trece în ciornă, la „De reverificat”.'),

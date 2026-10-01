@@ -1,0 +1,32 @@
+/* Tema A — „Dulce”: pasteluri calde, colțuri rotunde, umbre moi. Prietenoasă și drăguță. */
+:root {
+  --bg: #fff8f5; --surface: #fff; --text: #2b2230; --muted: #6e6274; --line: #f1e4e4;
+  --accent: #d6336c; --accent-text: #fff; --accent-soft: #fff0f4; --link: #b0245a;
+  --badge-bg: linear-gradient(135deg, #ffe3ec, #ffe9d6); --badge-text: #a3184d;
+  --ok: #1f7a55; --warn-bg: #fff1d6; --warn-text: #8a4b00;
+  --radius: 22px; --radius-sm: 14px;
+  --shadow: 0 2px 6px rgba(214, 51, 108, .05), 0 10px 30px rgba(214, 51, 108, .07);
+  --shadow-hover: 0 4px 10px rgba(214, 51, 108, .08), 0 18px 44px rgba(214, 51, 108, .12);
+  --hdr-bg: rgba(255, 248, 245, .96); --ftr-bg: #2b2230; --ftr-text: #d9cdd6; --ftr-head: #fff;
+  --font: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+.hdr { border-bottom-color: transparent; }
+.logo-mark__icon { border-radius: 12px; background: linear-gradient(135deg, #ff8a65, #d6336c); }
+.intro { border: 0; padding-bottom: 6px; }
+.intro__in { padding: 18px; background: linear-gradient(120deg, #ffe7ee 0%, #fff1e3 55%, #eaf4ff 100%); border-radius: 28px; }
+@media (min-width: 860px) { .intro__in { padding: 22px 28px; } }
+.search__row { border-color: transparent; border-radius: 99px; box-shadow: 0 6px 20px rgba(214, 51, 108, .10); }
+.search__btn { margin: 4px; width: 42px; border-radius: 50%; }
+.search--big .search__btn { width: 46px; }
+.card { border-color: transparent; }
+.sticker { border-radius: 18px; background: var(--badge-bg); }
+.sticker--ship { background: linear-gradient(135deg, #dff6ee, #e6f1ff); color: #186a4d; }
+.sticker--plain { background: linear-gradient(135deg, #efe8ff, #ffe8f1); color: #5b3a8c; }
+.btn { border-radius: 99px; }
+.btn--go { box-shadow: 0 6px 16px rgba(214, 51, 108, .25); }
+.btn--code { border-radius: 99px; border-color: #f0a6c0; }
+.btn--code .btn__label { border-radius: 99px 0 0 99px; }
+.brand, .cats li, .info div, .deal, .store, .box { border-color: transparent; }
+.tag { background: #f3ecff; color: #5b3a8c; }
+.cats li:nth-child(4n+1) { background: #fff0f4; } .cats li:nth-child(4n+2) { background: #fff4e6; }
+.cats li:nth-child(4n+3) { background: #eaf7f1; } .cats li:nth-child(4n) { background: #eef3ff; }

@@ -7,7 +7,7 @@
     <div class="search-page">@include('partials.search', ['big' => true, 'q' => $q])</div>
     @if ($q !== '')
         @if ($stores->isNotEmpty())
-            <section class="sec" aria-label="Magazine"><div class="shops">@foreach ($stores as $i => $s) @include('partials.store-card', ['s' => $s, 'tone' => $i % 3 + 1]) @endforeach</div></section>
+            <section class="sec" aria-label="Magazine"><ul class="brands">@foreach ($stores as $s) @include('partials.brand', ['s' => $s]) @endforeach</ul></section>
         @endif
         @if ($cats->isNotEmpty())
             <section class="sec" aria-labelledby="r-cat"><h2 id="r-cat">Categorii</h2><ul class="pills">@foreach ($cats as $c)<li><a href="{{ route('category', $c) }}">{{ $c->name }}</a></li>@endforeach</ul></section>
