@@ -4,6 +4,14 @@
 <div class="wrap">
     @include('partials.crumbs')
     <header class="head"><h1>Top oferte</h1><p>Cele mai bune vouchere, reduceri și cupoane active acum.</p></header>
+
+    @if ($featured->isNotEmpty())
+        <section class="sec" aria-labelledby="s-best">
+            <h2 id="s-best" class="sr">Cele mai bune oferte</h2>
+            <div class="features">@foreach ($featured as $c) @include('partials.coupon', ['c' => $c, 'feature' => true]) @endforeach</div>
+        </section>
+    @endif
+
     @foreach ([['top', 'Cele mai accesate și recomandate', $top], ['exclusive', 'Coduri exclusive', $exclusive], ['recente', 'Adăugate recent', $recent]] as [$id, $title, $list])
         @if ($list->isNotEmpty())
             <section class="sec" aria-labelledby="{{ $id }}">
@@ -12,7 +20,7 @@
             </section>
         @endif
     @endforeach
-    @if ($top->isEmpty() && $exclusive->isEmpty() && $recent->isEmpty())
+    @if ($featured->isEmpty())
         <p class="empty">Momentan nu sunt oferte active.</p>
     @endif
 </div>

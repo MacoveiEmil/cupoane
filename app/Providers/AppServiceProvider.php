@@ -20,12 +20,13 @@ class AppServiceProvider extends ServiceProvider
         View::composer(['layouts.app', 'home'], function ($view) {
             $view->with([
                 'site' => Settings::all(),
-                'menu' => [
+                // „Deal-uri” apare doar când există deal-uri active.
+                'menu' => array_values(array_filter([
                     ['Magazine', route('stores')],
                     ['Categorii', route('categories')],
-                    ['Deal-uri', route('deals')],
+                    \App\Models\Deal::active()->exists() ? ['Deal-uri', route('deals')] : null,
                     ['Top oferte', route('top')],
-                ],
+                ])),
                 'footerPages' => Page::where('in_footer', true)->orderBy('sort')->get(['slug', 'title']),
             ]);
         });

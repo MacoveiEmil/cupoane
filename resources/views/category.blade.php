@@ -5,20 +5,28 @@
     @include('partials.crumbs')
     <header class="head">
         <h1>Vouchere, reduceri și cupoane {{ $category->name }}</h1>
-        @if ($coupons->currentPage() > 1)<p>Pagina {{ $coupons->currentPage() }}</p>@endif
+        <p>{{ \App\Support\Seo::plural($coupons->total(), 'ofertă activă', 'oferte active') }}@if ($coupons->currentPage() > 1) · pagina {{ $coupons->currentPage() }}@endif</p>
     </header>
+
     @if ($coupons->currentPage() === 1 && $stores->isNotEmpty())
-        <ul class="pills">@foreach ($stores as $s)<li><a href="{{ $s->url() }}">{{ $s->name }} <b>{{ \App\Support\Catalog::count($s) }}</b></a></li>@endforeach</ul>
+        <section class="sec" aria-labelledby="s-stores">
+            <div class="sec__head"><h2 id="s-stores">Magazine</h2></div>
+            <ul class="brands">@foreach ($stores as $s) @include('partials.brand', ['s' => $s]) @endforeach</ul>
+        </section>
     @endif
-    @if ($coupons->isNotEmpty())
-        <h2 class="sr">Oferte active</h2>
-        <div class="cards">@foreach ($coupons as $c) @include('partials.coupon', ['c' => $c]) @endforeach</div>
-        @include('partials.pager', ['p' => $coupons])
-    @else
-        <p class="empty">Momentan nu sunt oferte active în această categorie.</p>
-    @endif
+
+    <section class="sec" aria-labelledby="s-offers">
+        <div class="sec__head"><h2 id="s-offers">Oferte active</h2></div>
+        @if ($coupons->isNotEmpty())
+            <div class="cards">@foreach ($coupons as $c) @include('partials.coupon', ['c' => $c]) @endforeach</div>
+            @include('partials.pager', ['p' => $coupons])
+        @else
+            <p class="empty">Momentan nu sunt oferte active în această categorie.</p>
+        @endif
+    </section>
+
     @if ($coupons->currentPage() === 1 && $category->description)
-        <section class="sec box prose"><p>{{ $category->description }}</p></section>
+        <section class="sec prose seo"><p>{{ $category->description }}</p></section>
     @endif
 </div>
 @endsection

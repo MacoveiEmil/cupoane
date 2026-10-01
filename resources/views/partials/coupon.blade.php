@@ -4,7 +4,12 @@
     $v = $votes[$c->id] ?? null;
     $kind = $c->value_type === 'transport' ? 'ship' : (($c->value !== null && (float) $c->value > 0) ? 'val' : 'plain');
 @endphp
-<article class="card" id="c-{{ $c->id }}">
+<article class="card{{ ($feature ?? false) ? ' card--feature' : '' }}" id="c-{{ $c->id }}">
+    @if (($feature ?? false) && $c->store)
+        <a class="card__logo" href="{{ $c->store->url() }}" tabindex="-1" aria-hidden="true">
+            @if ($c->store->logoUrl())<img src="{{ $c->store->logoUrl() }}" alt="" width="160" height="56" decoding="async">@else<span class="brand__ph">{{ mb_strtoupper(mb_substr($c->store->name, 0, 1)) }}</span>@endif
+        </a>
+    @endif
     <div class="sticker sticker--{{ $kind }}" aria-hidden="{{ $kind === 'plain' ? 'true' : 'false' }}">
         @if ($c->upto && $kind === 'val')<small>până la</small>@endif
         <b>{{ $c->badge() }}</b>

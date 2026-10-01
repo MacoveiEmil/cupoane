@@ -100,7 +100,7 @@ final class Catalog
             }
             $ids = $ids->unique()->filter(fn ($id) => ($counts[$id] ?? 0) > 0);
 
-            return ['stores' => $ids->count(), 'offers' => $ids->sum(fn ($id) => $counts[$id])];
+            return ['stores' => $ids->count(), 'offers' => $ids->sum(fn ($id) => $counts[$id]), 'ids' => $ids->values()->all()];
         };
 
         return Category::with('children')->whereNull('parent_id')->orderBy('sort')->orderBy('name')->get()

@@ -150,8 +150,13 @@ class SiteController extends Controller
         $top = Catalog::topOffers(24);
         $exclusive = Catalog::exclusive(24, $top->pluck('id'));
         $recent = Catalog::recent(24, $top->pluck('id')->merge($exclusive->pluck('id')));
+        // Primele 3 oferte (în ordinea top → exclusive → recente) devin căsuțele mari de sus.
+        $featured = $top->concat($exclusive)->concat($recent)->take(3);
+        $skip = $featured->pluck('id');
+        [$top, $exclusive, $recent] = [$top->whereNotIn('id', $skip), $exclusive->whereNotIn('id', $skip), $recent->whereNotIn('id', $skip)];
 
         return view('top', [
+            'featured' => $featured,
             'seo' => new Seo(title: 'Top oferte '.Day::monthYear().' — vouchere, reduceri și cupoane | '.Seo::site(), description: 'Cele mai bune vouchere, reduceri și cupoane active acum.', breadcrumbs: [['Top oferte', route('top')]]),
             'top' => $top, 'exclusive' => $exclusive, 'recent' => $recent,
             'votes' => Catalog::votes($top->concat($exclusive)->concat($recent)->pluck('id')),

@@ -22,7 +22,6 @@ final class Settings
             'footer_about' => 'Vouchere, reduceri și cupoane pentru magazinele online din România. Ofertele expirate dispar automat.',
             'affiliate_note' => 'Unele linkuri de pe site sunt linkuri de afiliere: dacă faci o comandă prin ele, putem primi un comision, fără niciun cost în plus pentru tine.',
             'home_seo_text' => '',
-            'theme' => 'a',
             // Reguli
             'recheck_days' => 30,
             'vote_min' => 5,

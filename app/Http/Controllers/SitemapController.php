@@ -14,7 +14,10 @@ class SitemapController extends Controller
 {
     public function sitemap()
     {
-        $urls = [[url('/'), now()], [route('stores'), now()], [route('categories'), now()], [route('deals'), now()], [route('top'), now()]];
+        $urls = [[url('/'), now()], [route('stores'), now()], [route('categories'), now()], [route('top'), now()]];
+        if (\App\Models\Deal::active()->exists()) {
+            $urls[] = [route('deals'), now()];
+        }
 
         foreach (Catalog::storesWithOffers() as $s) {
             if (Catalog::count($s) >= Seo::MIN_OFFERS_INDEX) {
