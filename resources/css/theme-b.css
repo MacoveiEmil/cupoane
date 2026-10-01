@@ -30,3 +30,9 @@
 .brands { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (min-width: 700px) { .brands { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .brand__deal { color: var(--accent); font-weight: 700; }
+.shop { padding: 0; overflow: hidden; gap: 0 14px; }
+.shop__logo { border: 0; border-radius: 0; }
+.shop__body { padding: 12px 0; }
+.shop__cta { border-radius: 0; }
+.shop__deal { background: var(--accent); color: #fff; }
+@media (min-width: 760px) { .shop { padding: 0; } .shop__logo { border-bottom: 1px solid var(--line); } .shop__body { padding: 14px 16px 16px; } }

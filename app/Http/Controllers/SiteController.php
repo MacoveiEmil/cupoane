@@ -31,7 +31,7 @@ class SiteController extends Controller
                 title: Seo::site().' — Vouchere, reduceri și cupoane verificate zilnic',
                 description: 'Vouchere, reduceri și cupoane verificate pentru magazinele online din România. Coduri actualizate zilnic, fără oferte expirate.',
             ),
-            'popular' => Catalog::popular(8),
+            'popular' => Catalog::popular(3),
             'top' => $top,
             'exclusive' => $exclusive,
             'recent' => $recent,

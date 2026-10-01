@@ -30,3 +30,9 @@
 .tag { background: #f3ecff; color: #5b3a8c; }
 .cats li:nth-child(4n+1) { background: #fff0f4; } .cats li:nth-child(4n+2) { background: #fff4e6; }
 .cats li:nth-child(4n+3) { background: #eaf7f1; } .cats li:nth-child(4n) { background: #eef3ff; }
+.shop { border-color: transparent; }
+.shops .shop:nth-child(3n+1) { background: linear-gradient(160deg, #fff0f4, #fff); }
+.shops .shop:nth-child(3n+2) { background: linear-gradient(160deg, #fff3e6, #fff); }
+.shops .shop:nth-child(3n) { background: linear-gradient(160deg, #eaf4ff, #fff); }
+.shop__logo { border-color: transparent; box-shadow: 0 4px 14px rgba(214, 51, 108, .08); }
+.shop__cta { border-radius: 99px; }

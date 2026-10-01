@@ -15,6 +15,13 @@
 </section>
 
 <div class="wrap">
+    @if ($popular->isNotEmpty())
+        <section class="sec" aria-labelledby="s-pop">
+            <div class="sec__head"><h2 id="s-pop">Magazine populare</h2><a class="more" href="{{ route('stores') }}">Toate magazinele <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
+            <div class="shops">@foreach ($popular as $s) @include('partials.store-card', ['s' => $s]) @endforeach</div>
+        </section>
+    @endif
+
     @php($lists = [['s-top', 'Top oferte', $top, route('top')], ['s-ex', 'Coduri exclusive', $exclusive, route('top').'#exclusive'], ['s-new', 'Adăugate recent', $recent, route('top').'#recente']])
 
     @foreach ($lists as $i => [$id, $title, $list, $more])
@@ -25,13 +32,6 @@
             </section>
         @endif
 
-        {{-- Magazinele populare, discret, după primul grup de oferte. --}}
-        @if ($i === 0 && $popular->isNotEmpty())
-            <section class="sec" aria-labelledby="s-pop">
-                <div class="sec__head"><h2 id="s-pop">Magazine populare</h2><a class="more" href="{{ route('stores') }}">Toate <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
-                <ul class="brands">@foreach ($popular as $s) @include('partials.brand', ['s' => $s]) @endforeach</ul>
-            </section>
-        @endif
     @endforeach
 
     @if ($deals->isNotEmpty())

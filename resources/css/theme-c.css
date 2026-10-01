@@ -29,3 +29,7 @@
 .cats li, .info div, .deal, .store, .box, .az a, .pills a, .pager a, .pager span { box-shadow: none; }
 .store { padding-left: 0; padding-right: 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; }
 .tag { background: #f4f4f5; }
+.shop { box-shadow: none; }
+.shop__logo { border: 0; background: #f7f7f8; }
+.shop__deal { background: transparent; padding: 0; color: var(--ok); }
+.shop__cta { border-radius: 99px; }
