@@ -54,9 +54,8 @@ class SitemapController extends Controller
 
     public function robots()
     {
-        if (Seo::isPreviewHost()) {
-            return response("User-agent: *\nDisallow: /\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
-        }
+        // Și pe linkul de preview (trycloudflare) roboții pot citi paginile, ca un AI să poată verifica site-ul;
+        // de indexare Google ne ferește meta noindex, pus pe toate paginile de preview (Seo::isPreviewHost).
         $body = "User-agent: *\nDisallow: /go/\nDisallow: /admin\nDisallow: /cauta\nDisallow: /api/\n\nSitemap: ".url('/sitemap.xml')."\n";
 
         return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
