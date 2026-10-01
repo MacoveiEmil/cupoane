@@ -1,0 +1,36 @@
+# Mediu local. Pornire: docker compose up -d  →  http://localhost:8080 (admin: /admin)
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/var/www/html
+      # vendor/ într-un volum Docker: pe Windows, citirea a mii de fișiere prin montare e foarte lentă.
+      - vendor:/var/www/html/vendor
+    environment:
+      SSL_MODE: "off"
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_REVALIDATE_FREQ: "0"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "1"
+      AUTORUN_ENABLED: "false"
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:lts
+    ports:
+      - "3307:3306"
+    environment:
+      MARIADB_DATABASE: cupoane
+      MARIADB_USER: cupoane
+      MARIADB_PASSWORD: cupoane_local
+      MARIADB_ROOT_PASSWORD: root_local
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
+  vendor:
