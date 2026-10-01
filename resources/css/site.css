@@ -348,9 +348,7 @@ html:not(.js) .vote { visibility: hidden; }
 .faq summary h3 { margin: 0; font-size: 1rem; }
 /* Căsuțe mici de ofertă (homepage) */
 .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-@media (min-width: 720px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; } }
-@media (min-width: 1000px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (max-width: 999px) { .tiles > :nth-child(n+7) { display: none; } }
+@media (min-width: 720px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; } }
 .tile { min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 10px; background: #fff; border: 1px solid var(--line); border-radius: 16px; transition: box-shadow .15s; }
 .tile:hover { box-shadow: var(--shadow-hover); }
 .tile__store { display: flex; align-items: center; gap: 6px; min-width: 0; height: 18px; color: var(--muted); font-size: .74rem; font-weight: 700; text-decoration: none; }

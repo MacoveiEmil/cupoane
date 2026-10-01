@@ -22,7 +22,7 @@
         @if ($list->isNotEmpty())
             <section class="sec" aria-labelledby="{{ $id }}">
                 <div class="sec__head"><h2 id="{{ $id }}">{{ $title }}</h2><a class="more" href="{{ $more }}">Vezi toate <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
-                {{-- Căsuțe mici: 2 pe rând pe mobil (3 rânduri), 3–4 pe desktop, ca să încapă cât mai multe pe ecran. --}}
+                {{-- 4 căsuțe mici: 2 × 2 pe mobil, un rând de 4 pe ecrane mai late. --}}
                 <div class="tiles">@foreach ($list as $c) @include('partials.coupon-tile', ['c' => $c]) @endforeach</div>
             </section>
         @endif
