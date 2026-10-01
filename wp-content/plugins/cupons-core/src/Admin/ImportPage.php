@@ -54,7 +54,9 @@ final class ImportPage
                 ?>
                 <div class="cupons-card" data-import="<?php echo esc_attr($id); ?>" <?php echo ($run === $id && $running) ? 'data-autorun' : ''; ?>>
                     <h2><?php echo esc_html($c->label()); ?></h2>
-                    <?php if (!$c->is_configured()) : ?>
+                    <?php if (!Importer::enabled($id)) : ?>
+                        <p><span class="cupons-badge">dezactivat</span> Rețeaua e oprită pentru import. O poți reactiva din <a href="<?php echo esc_url(add_query_arg(['post_type' => Keys::COUPON, 'page' => Settings::SLUG], admin_url('edit.php'))); ?>">Setări</a>.</p>
+                    <?php elseif (!$c->is_configured()) : ?>
                         <p><span class="cupons-badge">neconfigurat</span> Completează datele de acces în <a href="<?php echo esc_url(add_query_arg(['post_type' => Keys::COUPON, 'page' => Settings::SLUG], admin_url('edit.php'))); ?>">Setări</a>.</p>
                     <?php else : ?>
                         <p class="cupons-status" data-status><?php echo esc_html(self::summary($s)); ?></p>

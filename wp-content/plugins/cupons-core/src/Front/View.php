@@ -258,7 +258,9 @@ final class View
             'order'      => 'ASC',
             'meta_query' => [['key' => Keys::T_HOME_ORDER, 'value' => 0, 'compare' => '>', 'type' => 'NUMERIC']],
         ]);
-        $ordered = is_array($ordered) ? $ordered : [];
+        // Magazinele fără oferte active nu apar în liste (pagina lor rămâne accesibilă direct).
+        $counts  = Offers::counts_by_term(Keys::STORE);
+        $ordered = array_values(array_filter(is_array($ordered) ? $ordered : [], static fn($t) => ($counts[$t->term_id] ?? 0) > 0));
         if (count($ordered) >= $limit) {
             return $ordered;
         }
@@ -283,6 +285,9 @@ final class View
         $counts = Offers::counts_by_term(Keys::STORE);
         $groups = [];
         foreach (is_array($terms) ? $terms : [] as $t) {
+            if (($counts[$t->term_id] ?? 0) === 0) {
+                continue; // fără oferte active: nu apare în lista A–Z
+            }
             $l = mb_strtoupper(mb_substr(remove_accents($t->name), 0, 1));
             $l = ctype_alpha($l) ? $l : '0–9';
             $groups[$l][] = ['term' => $t, 'count' => $counts[$t->term_id] ?? 0];
@@ -300,9 +305,13 @@ final class View
         if ($map !== null) {
             return $map;
         }
-        $sets  = [];
-        $terms = get_terms(['taxonomy' => Keys::STORE, 'hide_empty' => false, 'fields' => 'ids']);
+        $sets   = [];
+        $counts = Offers::counts_by_term(Keys::STORE);
+        $terms  = get_terms(['taxonomy' => Keys::STORE, 'hide_empty' => false, 'fields' => 'ids']);
         foreach (is_array($terms) ? $terms : [] as $store_id) {
+            if (($counts[(int) $store_id] ?? 0) === 0) {
+                continue; // numărăm doar magazinele cu oferte active
+            }
             foreach (Sync::store_categories_with_ancestors((int) $store_id) as $cat) {
                 $sets[$cat][(int) $store_id] = true;
             }
@@ -439,7 +448,7 @@ final class View
         $stores = get_terms(['taxonomy' => Keys::STORE, 'hide_empty' => false, 'search' => $q, 'number' => 30]);
         $cats   = get_terms(['taxonomy' => Keys::CATEGORY, 'hide_empty' => false, 'search' => $q, 'number' => 10]);
         return [
-            'stores'     => self::rank_stores(is_array($stores) ? $stores : [], 30) ?: (is_array($stores) ? $stores : []),
+            'stores'     => self::rank_stores(is_array($stores) ? $stores : [], 30), // doar magazine cu oferte active
             'categories' => is_array($cats) ? $cats : [],
         ];
     }

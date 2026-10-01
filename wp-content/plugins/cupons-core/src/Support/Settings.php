@@ -19,6 +19,7 @@ final class Settings
             'vote_min'     => 5,    // rata de succes apare de la N voturi
             'trust_cf_ip'  => 0,    // folosește CF-Connecting-IP (doar dacă site-ul e în spatele Cloudflare)
             'auto_stores'  => 1,    // la import, creează magazine pentru programele acceptate neasociate
+            'networks_off' => [],   // rețele dezactivate la import (ID-uri conector)
         ];
     }
 

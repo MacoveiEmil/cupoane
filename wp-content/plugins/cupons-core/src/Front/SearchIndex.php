@@ -52,6 +52,9 @@ final class SearchIndex
         $counts = Offers::counts_by_term(Keys::STORE);
         $rows   = [];
         foreach ($terms as $t) {
+            if (($counts[$t->term_id] ?? 0) === 0) {
+                continue; // sugestiile arată doar magazine cu oferte active
+            }
             $link = get_term_link($t);
             if (is_string($link)) {
                 $rows[] = [$t->name, wp_make_link_relative($link), $counts[$t->term_id] ?? 0];

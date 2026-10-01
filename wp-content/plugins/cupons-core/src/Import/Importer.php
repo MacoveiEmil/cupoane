@@ -44,6 +44,12 @@ final class Importer
         return self::$connectors;
     }
 
+    /** Rețeaua e activă pentru import (bifa din Setări). */
+    public static function enabled(string $id): bool
+    {
+        return !in_array($id, (array) \Cupons\Core\Support\Settings::get('networks_off'), true);
+    }
+
     public static function connector(string $id): ?NetworkConnectorInterface
     {
         return self::connectors()[$id] ?? null;
@@ -84,7 +90,7 @@ final class Importer
     {
         $connector = self::connector($network);
         $state     = self::state($network);
-        if (!$connector || !self::is_running($state)) {
+        if (!$connector || !self::enabled($network) || !self::is_running($state)) {
             return $state;
         }
         if (!Lock::acquire('import_' . $network, 120)) {

@@ -83,6 +83,10 @@ final class Command
             if ($only !== '' && $id !== $only) {
                 continue;
             }
+            if (!\Cupons\Core\Import\Importer::enabled($id)) {
+                \WP_CLI::log($connector->label() . ': dezactivat în Setări. Sar peste.');
+                continue;
+            }
             if (!$connector->is_configured()) {
                 \WP_CLI::warning($connector->label() . ': neconfigurat (Cupoane → Setări). Sar peste.');
                 continue;

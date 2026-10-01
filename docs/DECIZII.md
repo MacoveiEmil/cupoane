@@ -122,3 +122,5 @@ Surse: exclusiv documentația oficială — [2Performant](https://doc.2performan
 | Containere de logo dreptunghiulare | Logo-urile reale din rețele sunt late (ex. 120×25); în pătrate deveneau minuscule. |
 | Logo-ul magazinului în rândul cu numele, pe card; badge-ul doar cu valoarea | Ierarhie clară: magazin → reducere → titlu → acțiune. |
 | Categoriile fără oferte active nu apar pe homepage; acord numeric corect („1 magazin”) | Secțiuni goale și greșeli mici arată neîngrijit. |
+| Activare/dezactivare per rețea (Setări → „Importă din …”); Profitshare oprit deocamdată | Ne axăm pe 2Performant; magazinele Profitshare (0 oferte) rămân în baza de date, gata de reactivare. |
+| Magazinele fără oferte active nu apar în liste (A–Z, căutare, sugestii, populare, footer, numărătoare pe categorii); pagina lor rămâne accesibilă direct, cu noindex | Site-ul nu pare gol; magazinele reapar automat când primesc oferte. |
