@@ -22,7 +22,8 @@
         <a class="btn btn--go store__go" href="{{ $store->goUrl() }}" target="_blank" rel="sponsored nofollow noopener">Mergi la magazin <svg width="16" height="16"><use href="#i-out"/></svg></a>
     </header>
 
-    <section class="sec" aria-label="Oferte {{ $store->name }}">
+    <section class="sec" aria-labelledby="s-offers">
+        <h2 id="s-offers" class="sr">Oferte {{ $store->name }}</h2>
         @if ($coupons->isNotEmpty())
             <div class="cards">@foreach ($coupons as $c) @include('partials.coupon', ['c' => $c, 'showStore' => false]) @endforeach</div>
         @else

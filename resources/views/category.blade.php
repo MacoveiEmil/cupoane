@@ -11,6 +11,7 @@
         <ul class="pills">@foreach ($stores as $s)<li><a href="{{ $s->url() }}">{{ $s->name }} <b>{{ \App\Support\Catalog::count($s) }}</b></a></li>@endforeach</ul>
     @endif
     @if ($coupons->isNotEmpty())
+        <h2 class="sr">Oferte active</h2>
         <div class="cards">@foreach ($coupons as $c) @include('partials.coupon', ['c' => $c]) @endforeach</div>
         @include('partials.pager', ['p' => $coupons])
     @else

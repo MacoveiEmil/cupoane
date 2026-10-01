@@ -8,6 +8,7 @@
         @if ($tag->description && $coupons->currentPage() === 1)<p>{{ $tag->description }}</p>@endif
     </header>
     @if ($coupons->isNotEmpty())
+        <h2 class="sr">Oferte active</h2>
         <div class="cards">@foreach ($coupons as $c) @include('partials.coupon', ['c' => $c]) @endforeach</div>
         @include('partials.pager', ['p' => $coupons])
     @else
