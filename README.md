@@ -84,13 +84,7 @@ Cupoanele nu au URL-uri proprii (apar doar în listări, cu ancora `#c-{id}`), d
 
 ## 5. Comenzi WP-CLI
 
-```bash
-wp cupons cleanup [--dry-run]           # curățarea zilnică, la cerere
-wp cupons import                        # import din toate rețelele configurate
-wp cupons import --network=profitshare  # doar o rețea
-wp cupons import --resume               # continuă un import întrerupt
-```
-
+\
 ## 6. LiteSpeed Cache
 
 Pluginul face singur purge la fiecare schimbare. Setări recomandate (**LiteSpeed Cache → …**):
