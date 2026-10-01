@@ -18,7 +18,7 @@ final class Settings
         return [
             // Texte
             'hero_title' => 'Vouchere, reduceri și cupoane verificate',
-            'hero_subtitle' => 'Coduri de reducere, vouchere și cupoane pentru magazinele online din România, verificate și actualizate zilnic. Copiezi codul, îl aplici în coș și plătești mai puțin la haine, încălțăminte, cărți, electronice și multe altele.',
+            'hero_subtitle' => 'Coduri de reducere, vouchere și cupoane pentru magazinele online din România, verificate și actualizate zilnic: haine, încălțăminte, cărți, electronice.',
             'footer_about' => 'Vouchere, reduceri și cupoane pentru magazinele online din România. Ofertele expirate dispar automat.',
             'affiliate_note' => 'Unele linkuri de pe site sunt linkuri de afiliere: dacă faci o comandă prin ele, putem primi un comision, fără niciun cost în plus pentru tine.',
             'home_seo_text' => '<h2>Coduri de reducere verificate zilnic, pentru cumpărături mai ieftine</h2>'

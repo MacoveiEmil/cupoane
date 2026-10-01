@@ -84,7 +84,7 @@ button, input { font: inherit; color: inherit; }
 
 /* Secțiuni */
 main { min-height: 60vh; }
-.sec { margin: 32px 0; }
+.sec { margin: 26px 0; }
 .sec__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; position: relative; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 .sec__head h2 { margin: 0; }
 .more { display: inline-flex; align-items: center; gap: 4px; color: var(--link); font-size: .9rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
@@ -114,23 +114,6 @@ main { min-height: 60vh; }
 .brand__deal { color: var(--hot-d); font-size: .78rem; font-weight: 700; }
 
 /* Magazine populare: carduri mari (orizontale pe mobil, verticale de la 760px) */
-.shops { display: grid; gap: 14px; }
-@media (min-width: 760px) { .shops { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
-@media (min-width: 1000px) { .shops { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.shop { min-width: 0; display: grid; grid-template-columns: 96px 1fr; grid-template-areas: "logo body" "cta cta"; align-items: center; gap: 10px 14px; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--text); text-decoration: none; transition: box-shadow .15s, transform .15s; }
-.shop:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
-.shop__logo { grid-area: logo; display: flex; align-items: center; justify-content: center; height: 56px; padding: 8px; overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); }
-.shop__logo img { width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; }
-.shop__body { grid-area: body; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
-.shop__name { max-width: 100%; overflow: hidden; font-size: 1.05rem; font-weight: 800; white-space: nowrap; text-overflow: ellipsis; }
-.shop__count { color: var(--muted); font-size: .88rem; }
-.shop__deal { margin-top: 4px; padding: 3px 10px; border-radius: 99px; background: var(--hot-soft); color: var(--hot-d); font-size: .82rem; font-weight: 800; }
-.shop__cta { grid-area: cta; display: flex; align-items: center; justify-content: center; gap: 6px; height: 40px; border-radius: 99px; background: var(--accent); color: var(--accent-text); font-weight: 700; }
-@media (min-width: 760px) {
-  .shop { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; grid-template-areas: "logo" "body" "cta"; align-items: start; padding: 14px; text-align: center; }
-  .shop__logo { height: 70px; padding: 12px 22px; }
-  .shop__body { align-items: center; }
-}
 
 /* Cardul de ofertă (layout implicit: rând orizontal) */
 .cards { display: grid; gap: 0; }
@@ -284,8 +267,6 @@ html:not(.js) .vote { visibility: hidden; }
 
 .cats li, .info div, .deal, .store, .box, .az a, .pills a, .pager a, .pager span { box-shadow: none; }
 
-.shop { box-shadow: none; }
-.shop__logo { border: 0; background: #f4f8f6; }
 
 .ftr__note, .ftr__bottom { opacity: 1; color: var(--ftr-text); }
 /* Complementar: portocaliu pentru cifrele reducerilor, verde pentru acțiuni. */
@@ -365,3 +346,25 @@ html:not(.js) .vote { visibility: hidden; }
 .trust a { color: var(--link); }
 .store__text { margin-top: 18px; }
 .faq summary h3 { margin: 0; font-size: 1rem; }
+/* Căsuțe mici de ofertă (homepage) */
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 720px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; } }
+@media (min-width: 1000px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 999px) { .tiles > :nth-child(n+7) { display: none; } }
+.tile { min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 10px; background: #fff; border: 1px solid var(--line); border-radius: 16px; transition: box-shadow .15s; }
+.tile:hover { box-shadow: var(--shadow-hover); }
+.tile__store { display: flex; align-items: center; gap: 6px; min-width: 0; height: 18px; color: var(--muted); font-size: .74rem; font-weight: 700; text-decoration: none; }
+.tile__store img { flex: none; width: auto; max-width: 52px; height: 16px; object-fit: contain; }
+.tile__store span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tile__val { display: flex; align-items: baseline; gap: 5px; min-height: 1.5rem; color: var(--hot); line-height: 1.1; }
+.tile__val b { font-size: 1.3rem; font-weight: 900; letter-spacing: -.02em; }
+.tile__val small { color: var(--hot-d); font-size: .62rem; font-weight: 800; text-transform: uppercase; }
+.tile__val--plain, .tile__val--ship { color: var(--ink); }
+.tile__val--plain b, .tile__val--ship b { font-size: 1.1rem; }
+.tile__title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.6em; margin: 0; font-size: .82rem; line-height: 1.3; }
+.tile__meta { display: flex; flex-wrap: wrap; gap: 4px 6px; max-height: 1.25rem; margin: 0; overflow: hidden; color: var(--muted); font-size: .72rem; line-height: 1.25rem; }
+.tile__meta .tag { padding: 0 6px; font-size: .68rem; }
+.tile .btn { margin-top: auto; height: 34px; padding: 0 8px; font-size: .82rem; }
+.tile .btn--code .btn__label { inset: -1.5px; border-radius: 99px; }
+.tile .btn--code.is-open .btn__code { font-size: .95rem; }
+@media (max-width: 719px) { .tile__exp { display: none; } .tile__val { min-height: 0; } .tiles { gap: 8px; } .intro + .wrap > .sec:first-child { margin-top: 16px; } .intro + .wrap .sec__head { margin-bottom: 10px; padding-bottom: 8px; } .intro { padding: 10px 0 8px; } .intro__in { gap: 8px; } .intro__text { margin-top: 4px; font-size: .84rem; line-height: 1.42; } }

@@ -22,10 +22,11 @@ class SiteController extends Controller
     public function home()
     {
         // Ordinea paginii: întâi prospețimea (cele mai noi), apoi cele mai mari reduceri, apoi magazinele.
-        $recent = Catalog::recent(4, collect());
-        $top = Catalog::topOffers(6, $recent->pluck('id'));
+        // 8 căsuțe pe secțiune: 2 rânduri pe desktop (4 pe rând); pe ecrane mici se văd primele 6 (3 rânduri × 2).
+        $recent = Catalog::recent(8, collect());
+        $top = Catalog::topOffers(8, $recent->pluck('id'));
         if ($top->isEmpty()) {
-            $top = Catalog::topOffers(6); // inventar mic: mai bine o repetare decât o secțiune lipsă
+            $top = Catalog::topOffers(8); // inventar mic: mai bine o repetare decât o secțiune lipsă
         }
         $exclusive = Catalog::exclusive(6, $recent->pluck('id')->merge($top->pluck('id')));
         $counts = Catalog::storeCounts();
@@ -40,7 +41,7 @@ class SiteController extends Controller
             ),
             'faq' => $faq,
             'faqTitle' => $faqBlock['title'] ?? 'Întrebări frecvente',
-            'popular' => Catalog::popular(8),
+            'popular' => Catalog::popular(10),
             'top' => $top,
             'exclusive' => $exclusive,
             'recent' => $recent,

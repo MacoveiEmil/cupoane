@@ -22,6 +22,7 @@
     });
   }
   function say(status, msg, href) {
+    if (!status) return; // căsuțele mici n-au rând de stare: codul se vede direct în buton
     status.textContent = msg;
     if (!href) return;
     var a = d.createElement('a');
@@ -33,7 +34,7 @@
     var btn = e.target.closest('.btn--code');
     if (!btn) return;
     var code = btn.getAttribute('data-code') || '';
-    var status = btn.closest('.card').querySelector('.card__status');
+    var status = btn.closest('.card, .tile').querySelector('.card__status');
     var again = btn.classList.contains('is-open');
     // Primul click: dezvăluie, copiază și deschide magazinul. Următoarele: doar copiază (fără tab-uri noi).
     if (again) e.preventDefault();
