@@ -3,10 +3,11 @@
 @section('content')
 <div class="wrap">
     @include('partials.crumbs')
-    <header class="head"><h1>Categorii</h1><p>Vouchere, reduceri și cupoane grupate pe tipuri de magazine.</p></header>
+    <header class="head"><h1>Categorii de coduri de reducere</h1><p>Vouchere, reduceri și cupoane grupate pe tipuri de magazine.</p></header>
     @if ($tree->isEmpty())
         <p class="empty">Momentan nu sunt categorii cu oferte active.</p>
     @else
+        <div class="sec__head"><h2>Toate categoriile</h2></div>
         <ul class="catcards">
             @foreach ($tree as $row)
                 @php($logos = \App\Support\Catalog::storesWithOffers()->whereIn('id', $row['ids'])->take(4))
@@ -28,5 +29,6 @@
             @endforeach
         </ul>
     @endif
+    @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
 </div>
 @endsection

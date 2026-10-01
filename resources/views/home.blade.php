@@ -22,7 +22,7 @@
         </section>
     @endif
 
-    @php($lists = [['s-top', 'Top oferte', $top, route('top')], ['s-ex', 'Coduri exclusive', $exclusive, route('top').'#exclusive'], ['s-new', 'Adăugate recent', $recent, route('top').'#recente']])
+    @php($lists = [['s-top', 'Top coduri și oferte', $top, route('top')], ['s-ex', 'Coduri exclusive', $exclusive, route('top').'#exclusive'], ['s-new', 'Adăugate recent', $recent, route('top').'#recente']])
 
     @foreach ($lists as $i => [$id, $title, $list, $more])
         @if ($list->isNotEmpty())
@@ -43,7 +43,7 @@
 
     @if ($categories->isNotEmpty())
         <section class="sec" aria-labelledby="s-cat">
-            <div class="sec__head"><h2 id="s-cat">Categorii</h2><a class="more" href="{{ route('categories') }}">Vezi toate <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
+            <div class="sec__head"><h2 id="s-cat">Categorii populare</h2><a class="more" href="{{ route('categories') }}">Vezi toate <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
             <ul class="cats">
                 @foreach ($categories as $row)
                     <li><a href="{{ route('category', $row['category']) }}">{{ $row['category']->name }}</a><span>{{ \App\Support\Seo::plural($row['stores'], 'magazin', 'magazine') }} · {{ \App\Support\Seo::plural($row['offers'], 'ofertă', 'oferte') }}</span></li>

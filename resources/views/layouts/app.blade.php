@@ -66,11 +66,11 @@
             <p class="ftr__note">{{ $site['affiliate_note'] }}</p>
         </div>
         <nav aria-labelledby="f1">
-            <h2 id="f1">Descoperă</h2>
+            <h3 id="f1">Descoperă</h3>
             <ul>@foreach ($menu as [$label, $url])<li><a href="{{ $url }}">{{ $label }}</a></li>@endforeach</ul>
         </nav>
         <nav aria-labelledby="f2">
-            <h2 id="f2">Informații</h2>
+            <h3 id="f2">Informații</h3>
             <ul>@foreach ($footerPages as $p)<li><a href="{{ url('/'.$p->slug) }}">{{ $p->title }}</a></li>@endforeach</ul>
         </nav>
     </div>

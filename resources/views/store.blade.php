@@ -13,17 +13,14 @@
             @endif
         </span>
         <div class="store__main">
-            <h1>Cod reducere {{ $store->name }}</h1>
-            <p class="store__meta">
-                <span><b>{{ \App\Support\Seo::plural($coupons->count(), 'ofertă activă', 'oferte active') }}</b></span>
-                <span>Actualizat la {{ \App\Support\Day::human($store->updated_on ?? \App\Support\Day::today()) }}</span>
-            </p>
+            <h1>{{ $h1 }}</h1>
+            <p class="store__meta"><span><b>{{ \App\Support\Seo::plural($coupons->count(), 'ofertă activă', 'oferte active') }}</b></span></p>
         </div>
         <a class="btn btn--go store__go" href="{{ $store->goUrl() }}" target="_blank" rel="sponsored nofollow noopener">Mergi la magazin <svg width="16" height="16"><use href="#i-out"/></svg></a>
     </header>
 
-    <section class="sec" aria-labelledby="s-offers">
-        <h2 id="s-offers" class="sr">Oferte {{ $store->name }}</h2>
+    {{-- Ofertele (H3) vin direct sub H1, fără titlu intermediar. --}}
+    <section class="sec" aria-label="Oferte {{ $store->name }}">
         @if ($coupons->isNotEmpty())
             <div class="cards">@foreach ($coupons as $c) @include('partials.coupon', ['c' => $c, 'showStore' => false]) @endforeach</div>
         @else
@@ -55,12 +52,10 @@
         </section>
     @endif
 
-    @if ($faq)
-        <section class="sec" aria-labelledby="s-faq">
-            <h2 id="s-faq">Întrebări frecvente</h2>
-            <div class="faq box">@foreach ($faq as [$q, $a])<details><summary>{{ $q }}</summary><p>{{ $a }}</p></details>@endforeach</div>
-        </section>
-    @endif
+    @include('partials.guide', ['b' => $guides['howto'], 'id' => 's-howto'])
+    @include('partials.guide', ['b' => $guides['method'], 'id' => 's-method'])
+    @include('partials.guide', ['b' => $guides['tips'], 'id' => 's-tips'])
+    @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
 
     @if ($similar->isNotEmpty())
         <section class="sec" aria-labelledby="s-sim">

@@ -3,11 +3,10 @@
 @section('content')
 <div class="wrap">
     @include('partials.crumbs')
-    <header class="head"><h1>Top oferte</h1><p>Cele mai bune vouchere, reduceri și cupoane active acum.</p></header>
+    <header class="head"><h1>Top coduri și oferte</h1><p>Cele mai bune vouchere, reduceri și cupoane active acum.</p></header>
 
     @if ($featured->isNotEmpty())
-        <section class="sec" aria-labelledby="s-best">
-            <h2 id="s-best" class="sr">Cele mai bune oferte</h2>
+        <section class="sec" aria-label="Cele mai bune oferte">
             <div class="features">@foreach ($featured as $c) @include('partials.coupon', ['c' => $c, 'feature' => true]) @endforeach</div>
         </section>
     @endif
@@ -23,5 +22,6 @@
     @if ($featured->isEmpty())
         <p class="empty">Momentan nu sunt oferte active.</p>
     @endif
+    @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
 </div>
 @endsection

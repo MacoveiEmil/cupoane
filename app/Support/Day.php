@@ -23,6 +23,14 @@ final class Day
         return $d ? $d->day.' '.self::MONTHS[$d->month].' '.$d->year : '';
     }
 
+    /** 1 octombrie 2026 */
+    public static function long(?CarbonInterface $d = null): string
+    {
+        $d ??= self::today();
+
+        return $d->day.' '.self::MONTHS_LONG[$d->month].' '.$d->year;
+    }
+
     /** octombrie 2026 */
     public static function monthYear(?CarbonInterface $d = null): string
     {

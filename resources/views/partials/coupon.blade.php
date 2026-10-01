@@ -21,7 +21,8 @@
                 {{ $c->store->name }}
             </a>
         @endif
-        <h3 class="card__title">{{ $c->title }}</h3>
+        @php($pre = $c->headingPrefix())
+        <h3 class="card__title">@if ($pre !== '')<span class="card__pre">{{ $pre }}</span> @endif{{ $c->title }}</h3>
         <p class="card__meta">
             @if ($c->exclusive)<span class="tag tag--excl"><svg width="12" height="12"><use href="#i-star"/></svg>Exclusiv</span>@endif
             @if ($exp && $exp['soon'])<span class="tag tag--soon"><svg width="12" height="12"><use href="#i-clock"/></svg>{{ $exp['text'] }}</span>@endif

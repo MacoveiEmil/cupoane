@@ -62,6 +62,18 @@ class SiteSettings extends Page
                     Textarea::make('footer_about')->label('Text „Despre” din footer')->rows(2)->maxLength(300),
                     Textarea::make('affiliate_note')->label('Mențiunea de afiliere (footer)')->rows(2)->maxLength(300),
                 ]),
+                Tab::make('Texte pagini')->icon(Heroicon::OutlinedDocumentText)->schema([
+                    Section::make('Cum se scriu blocurile')->description('Primul rând = titlul secțiunii (H2). Apoi câte un rând „Subtitlu | text” (subtitlul devine H3; la întrebări frecvente: „Întrebare | Răspuns”). Variabile: {magazin}, {categorie}, {data}. Un bloc gol nu se afișează.')->schema([
+                        TextInput::make('store_h1')->label('H1 pagină magazin')->maxLength(120)->helperText('Ex.: Coduri reducere {magazin} actualizate pe {data}'),
+                        Textarea::make('store_howto')->label('Magazin: cum folosești codurile')->rows(5),
+                        Textarea::make('store_method')->label('Magazin: cum ajunge un cod pe pagină')->rows(6),
+                        Textarea::make('store_tips')->label('Magazin: cum economisești')->rows(5),
+                        Textarea::make('store_faq')->label('Magazin: întrebări frecvente (dacă magazinul nu are întrebări proprii)')->rows(5),
+                        TextInput::make('category_h1')->label('H1 pagină categorie')->maxLength(120)->helperText('Ex.: Coduri reducere {categorie}'),
+                        Textarea::make('category_faq')->label('Categorie: întrebări frecvente')->rows(4),
+                        Textarea::make('listing_faq')->label('Magazine A–Z, Categorii, Top oferte: întrebări frecvente')->rows(5),
+                    ]),
+                ]),
                 Tab::make('Reguli')->icon(Heroicon::OutlinedAdjustmentsHorizontal)->schema([
                     TextInput::make('recheck_days')->label('Reverificare oferte fără expirare (zile)')->numeric()->minValue(7)->maxValue(365)->required()
                         ->helperText('După acest interval fără verificare, oferta trece în ciornă, la „De reverificat”.'),

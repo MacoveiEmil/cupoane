@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Coupon extends Model
 {
@@ -96,6 +97,26 @@ class Coupon extends Model
     public function masked(): string
     {
         return $this->code ? mb_substr($this->code, 0, 2).'****' : '';
+    }
+
+    /**
+     * Începutul titlului H3, pentru căutări de tip „cod reducere {magazin}”: „Cod reducere Answear.ro:”.
+     * Gol dacă titlul conține deja numele magazinului.
+     */
+    public function headingPrefix(): string
+    {
+        $name = (string) $this->store?->name;
+        $base = preg_replace('/\.(ro|com|eu|net|org)$/i', '', $name);
+        $title = Str::lower(Str::ascii((string) $this->title));
+        if ($name === '' || str_contains($title, Str::lower(Str::ascii($base)))) {
+            return '';
+        }
+
+        return match (true) {
+            (bool) $this->code => "Cod reducere {$name}:",
+            str_starts_with($title, 'reduc') => "Ofertă {$name}:",
+            default => "Reducere {$name}:",
+        };
     }
 
     /** Textul badge-ului: „−20%”, „50 lei”, „Transport gratuit”, „Cod” / „Ofertă”. */
