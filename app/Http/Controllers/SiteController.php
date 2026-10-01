@@ -58,7 +58,7 @@ class SiteController extends Controller
                 title: "Cod reducere {$store->name} {$ll} — vouchere, reduceri și cupoane",
                 description: "Vouchere, reduceri și cupoane {$store->name} verificate: ".Seo::plural($count, 'ofertă activă', 'oferte active')." în {$ll}. Actualizat la ".Day::human($store->updated_on ?? Day::today()).'.',
                 canonical: $store->url(),
-                noindex: $count < Seo::MIN_OFFERS_INDEX,
+                noindex: ! $store->indexable($count),
                 breadcrumbs: [['Magazine', route('stores')], [$store->name, $store->url()]],
                 faq: $faq,
             ),

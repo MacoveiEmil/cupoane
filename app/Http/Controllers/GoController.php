@@ -68,7 +68,10 @@ class GoController extends Controller
     {
         $ua = (string) $request->userAgent();
 
-        return $ua === '' || $request->isMethod('HEAD')
+        // Preîncărcările browserului (prefetch / prerender) nu sunt click-uri reale.
+        $prefetch = (bool) preg_match('/prefetch|prerender/i', $request->header('Sec-Purpose', '').$request->header('Purpose', '').$request->header('X-Moz', ''));
+
+        return $ua === '' || $request->isMethod('HEAD') || $prefetch
             || (bool) preg_match('/bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|curl|wget|python|httpclient|monitor/i', $ua);
     }
 }

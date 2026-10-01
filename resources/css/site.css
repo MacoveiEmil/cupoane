@@ -360,3 +360,8 @@ html:not(.js) .vote { visibility: hidden; }
 .guide__item { padding: 16px 18px; background: #f6f9f8; border-radius: 16px; }
 .guide__item h3 { margin: 0 0 6px; font-size: 1rem; }
 .guide__item p { margin: 0; color: var(--muted); font-size: .94rem; line-height: 1.55; }
+.sprite { display: none; }
+.ftr__stores { padding: 0 16px 24px; }
+.ftr__stores ul { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.ftr__stores li { padding: 2px 0; }
+.store__meta a { color: var(--link); font-size: .88rem; font-weight: 600; }

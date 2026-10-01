@@ -12,6 +12,11 @@ final class Day
 
     private const MONTHS_LONG = ['', 'ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august', 'septembrie', 'octombrie', 'noiembrie', 'decembrie'];
 
+    public static function now(): CarbonImmutable
+    {
+        return CarbonImmutable::now(config('app.timezone'));
+    }
+
     public static function today(): CarbonImmutable
     {
         return CarbonImmutable::now(config('app.timezone'))->startOfDay();

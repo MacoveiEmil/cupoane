@@ -26,7 +26,7 @@
         <p class="card__meta">
             @if ($c->exclusive)<span class="tag tag--excl"><svg width="12" height="12"><use href="#i-star"/></svg>Exclusiv</span>@endif
             @if ($exp && $exp['soon'])<span class="tag tag--soon"><svg width="12" height="12"><use href="#i-clock"/></svg>{{ $exp['text'] }}</span>@endif
-            @if ($c->verified_on)<span class="card__ok"><svg width="13" height="13"><use href="#i-check"/></svg>Verificat pe <time datetime="{{ $c->verified_on->toDateString() }}">{{ \App\Support\Day::human($c->verified_on) }}</time></span>@endif
+            @if ($c->verified_on)<span class="card__ok"><svg width="13" height="13"><use href="#i-check"/></svg>Verificat pe <time datetime="{{ $c->verified_on->toDateString() }}">{{ \App\Support\Day::human($c->verified_on) }}</time></span>@elseif ($c->created_at)<span>Adăugat pe <time datetime="{{ $c->created_at->toDateString() }}">{{ \App\Support\Day::human($c->created_at) }}</time></span>@endif
             @if ($exp && ! $exp['soon'])<span>{{ $exp['text'] }}</span>@endif
         </p>
         @if ($c->terms)

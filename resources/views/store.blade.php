@@ -14,7 +14,7 @@
         </span>
         <div class="store__main">
             <h1>{{ $h1 }}</h1>
-            <p class="store__meta"><span><b>{{ \App\Support\Seo::plural($coupons->count(), 'ofertă activă', 'oferte active') }}</b></span></p>
+            <p class="store__meta"><span><b>{{ \App\Support\Seo::plural($coupons->count(), 'ofertă activă', 'oferte active') }}</b></span>@foreach ($store->categories as $cat)<a href="{{ route('category', $cat) }}">{{ $cat->name }}</a>@endforeach</p>
         </div>
         <a class="btn btn--go store__go" href="{{ $store->goUrl() }}" target="_blank" rel="sponsored nofollow noopener">Mergi la magazin <svg width="16" height="16"><use href="#i-out"/></svg></a>
     </header>

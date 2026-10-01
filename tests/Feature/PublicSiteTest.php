@@ -33,12 +33,11 @@ class PublicSiteTest extends TestCase
         $store = $this->store();
         $this->coupon($store);
 
-        // Un singur H1, canonical, schema; magazin cu < 3 oferte = noindex.
+        // Un singur H1, canonical, schema (regulile de noindex: LaunchSafetyTest).
         $html = $this->get('/magazin/'.$store->slug)->assertOk()->getContent();
         $this->assertSame(1, substr_count($html, '<h1'));
         $this->assertStringContainsString('<link rel="canonical" href="'.url('/magazin/'.$store->slug).'">', $html);
         $this->assertStringContainsString('"@type":"BreadcrumbList"', $html);
-        $this->assertStringContainsString('noindex', $html);
 
         $this->get('/robots.txt')->assertOk()->assertSee('Disallow: /go/');
         $this->get('/sitemap.xml')->assertOk()->assertSee('<urlset', false);

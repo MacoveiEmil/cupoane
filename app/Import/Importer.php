@@ -257,12 +257,12 @@ final class Importer
         return Store::whereNotNull('logo_src')->count();
     }
 
-    /** Redimensionează la max 320×160 și salvează WebP (fundal transparent păstrat). */
-    public static function saveWebp(\GdImage $img, string $base): string
+    /** Redimensionează (implicit max 320×160) și salvează WebP (fundal transparent păstrat). */
+    public static function saveWebp(\GdImage $img, string $base, int $maxW = 320, int $maxH = 160): string
     {
         $w = imagesx($img);
         $h = imagesy($img);
-        $scale = min(1, 320 / $w, 160 / $h);
+        $scale = min(1, $maxW / $w, $maxH / $h);
         $nw = max(1, (int) round($w * $scale));
         $nh = max(1, (int) round($h * $scale));
         $out = imagecreatetruecolor($nw, $nh);

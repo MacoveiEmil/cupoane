@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Deals\Schemas;
 
 use Filament\Forms\Components\DatePicker;
+use App\Support\Images;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -30,7 +32,8 @@ class DealForm
             Section::make('Publicare')->columnSpan(1)->schema([
                 ToggleButtons::make('status')->label('Status')->inline()->required()->default('draft')
                     ->options(['draft' => 'Ciornă', 'published' => 'Publicat'])->colors(['draft' => 'gray', 'published' => 'success']),
-                FileUpload::make('image_path')->label('Imagine')->image()->disk('public')->directory('deals')->maxSize(3072),
+                FileUpload::make('image_path')->label('Imagine')->image()->acceptedFileTypes(Images::MIME)->disk('public')->directory('deals')->maxSize(3072)
+                    ->saveUploadedFileUsing(fn (TemporaryUploadedFile $file) => Images::fromUpload($file, 'deals', 'image_path', 800, 600)),
                 DatePicker::make('expires_on')->label('Expiră la')->native(false)->displayFormat('d.m.Y'),
             ]),
         ]);

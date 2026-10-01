@@ -28,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
                     ['Top oferte', route('top')],
                 ])),
                 'footerPages' => Page::where('in_footer', true)->orderBy('sort')->get(['slug', 'title']),
+                // Linkare internă: magazinele importante, la un click de orice pagină.
+                'footerStores' => \App\Support\Catalog::popular(20),
             ]);
         });
     }

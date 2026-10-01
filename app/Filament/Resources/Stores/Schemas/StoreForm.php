@@ -3,6 +3,9 @@
 namespace App\Filament\Resources\Stores\Schemas;
 
 use App\Models\Store;
+use App\Support\Images;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
@@ -35,8 +38,11 @@ class StoreForm
                 Select::make('categories')->label('Categorii')->relationship('categories', 'name')->multiple()->preload()->searchable()->columnSpanFull(),
             ]),
             Section::make('Logo și afișare')->columnSpan(1)->schema([
-                FileUpload::make('logo_path')->label('Logo')->image()->disk('public')->directory('logos')->maxSize(2048)
-                    ->helperText('PNG/JPG/WebP; se convertește automat în WebP.'),
+                FileUpload::make('logo_path')->label('Logo')->image()->acceptedFileTypes(Images::MIME)->disk('public')->directory('logos')->maxSize(2048)
+                    ->saveUploadedFileUsing(fn (TemporaryUploadedFile $file) => Images::fromUpload($file, 'logos', 'logo_path', 320, 160))
+                    ->helperText('PNG, JPG sau WebP (fără SVG); se micșorează și se salvează automat WebP.'),
+                Toggle::make('force_index')->label('Indexează pagina și fără oferte')
+                    ->helperText('Implicit, pagina e indexată în Google dacă are cel puțin o ofertă activă sau text „Despre magazin”.'),
                 TextInput::make('home_order')->label('Ordine pe homepage')->numeric()->minValue(0)->maxValue(999)->default(0)
                     ->helperText('1, 2, 3 = cardurile mari de pe homepage. 0 = nu apare acolo.'),
                 Grid::make(2)->schema([

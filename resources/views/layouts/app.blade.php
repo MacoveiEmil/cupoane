@@ -18,7 +18,7 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>{!! \App\Support\Assets::css() !!}</style>
-<script>document.documentElement.classList.add('js')</script>
+<script>{!! \App\Support\Assets::INLINE_JS !!}</script>
 <script type="application/ld+json">{!! json_encode($seo->schema(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
 <script src="{{ \App\Support\Assets::js() }}" defer></script>
 </head>
@@ -74,6 +74,12 @@
             <ul>@foreach ($footerPages as $p)<li><a href="{{ url('/'.$p->slug) }}">{{ $p->title }}</a></li>@endforeach</ul>
         </nav>
     </div>
+    @if ($footerStores->isNotEmpty())
+        <nav class="wrap ftr__stores" aria-labelledby="f3">
+            <h3 id="f3">Magazine populare</h3>
+            <ul>@foreach ($footerStores as $s)<li><a href="{{ $s->url() }}">Cod reducere {{ $s->name }}</a></li>@endforeach<li><a href="{{ route('stores') }}">Toate magazinele →</a></li></ul>
+        </nav>
+    @endif
     <div class="wrap ftr__bottom">© {{ now()->year }} {{ config('app.name') }} · Vouchere, reduceri și cupoane verificate</div>
 </footer>
 </body>

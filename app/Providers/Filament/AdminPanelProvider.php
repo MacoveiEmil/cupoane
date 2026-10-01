@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,7 +28,10 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login() // Filament limitează deja încercările de login (5 pe minut)
+            ->profile()
+            // Doi pași: opțional local, obligatoriu în producție (la primul login cere configurarea).
+            ->multiFactorAuthentication([AppAuthentication::make()->recoverable()], isRequired: fn () => app()->isProduction())
             ->brandName('Admin cupoane')
             ->colors([
                 'primary' => Color::hex('#e8452c'),

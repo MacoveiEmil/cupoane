@@ -4,11 +4,11 @@ namespace App\Support;
 
 /**
  * Meta-urile unei pagini: title, description, canonical, robots, breadcrumbs, FAQ.
- * Layout-ul le scrie în <head> împreună cu schema JSON-LD (Organization, WebSite+SearchAction, BreadcrumbList, FAQPage).
+ * Layout-ul le scrie în <head> împreună cu schema JSON-LD (Organization, WebSite, BreadcrumbList, FAQPage).
  */
 final class Seo
 {
-    /** Sub acest număr de oferte active, pagina de magazin / categorie / etichetă e noindex. */
+    /** Sub acest număr de oferte active, pagina de categorie / etichetă e noindex (magazinele: Store::indexable). */
     public const MIN_OFFERS_INDEX = 3;
 
     public function __construct(
@@ -53,7 +53,6 @@ final class Seo
             [
                 '@type' => 'WebSite', '@id' => $home.'#web', 'url' => $home, 'name' => self::site(), 'inLanguage' => 'ro-RO',
                 'publisher' => ['@id' => $home.'#org'],
-                'potentialAction' => ['@type' => 'SearchAction', 'target' => ['@type' => 'EntryPoint', 'urlTemplate' => url('/cauta').'?q={search_term_string}'], 'query-input' => 'required name=search_term_string'],
             ],
         ];
         if ($this->breadcrumbs) {

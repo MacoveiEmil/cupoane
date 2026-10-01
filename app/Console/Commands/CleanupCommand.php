@@ -30,7 +30,9 @@ class CleanupCommand extends Command
 
         $expired = fn ($model) => $model::whereNotNull('expires_on')->whereDate('expires_on', '<', $today);
         $stale = fn ($model) => $model::where('status', 'published')->whereNull('expires_on')
-            ->where(fn ($q) => $q->whereNull('verified_on')->orWhereDate('verified_on', '<', $threshold));
+            // Neverificate (importate): contează data adăugării.
+            ->where(fn ($q) => $q->whereDate('verified_on', '<', $threshold)
+                ->orWhere(fn ($q) => $q->whereNull('verified_on')->whereDate('created_at', '<', $threshold)));
         $purgeable = fn ($model) => $model::onlyTrashed()->where('deleted_at', '<', now()->subDays(30));
 
         $counts = [

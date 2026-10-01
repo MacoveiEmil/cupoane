@@ -28,7 +28,7 @@ class Store extends Model
 
     protected function casts(): array
     {
-        return ['info' => 'array', 'faq' => 'array', 'updated_on' => 'date'];
+        return ['info' => 'array', 'faq' => 'array', 'updated_on' => 'date', 'force_index' => 'boolean'];
     }
 
     protected static function booted(): void
@@ -65,6 +65,15 @@ class Store extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class);
+    }
+
+    /**
+     * Pagina magazinului se indexează de la o ofertă activă, dacă are text „Despre” sau dacă e forțată din admin.
+     * (Fără prag de 3: „cod reducere X” se caută și când magazinul are puține oferte.)
+     */
+    public function indexable(int $offers): bool
+    {
+        return $this->force_index || $offers > 0 || trim(strip_tags((string) $this->description)) !== '';
     }
 
     public function activeCoupons(): HasMany

@@ -37,7 +37,10 @@ class Coupon extends Model
     {
         static::saving(function (Coupon $c) {
             $c->code = $c->code !== null ? (preg_replace('/\s+/u', '', trim($c->code)) ?: null) : null;
-            $c->verified_on ??= Day::today();
+            // Adăugate manual = verificate azi. Cele importate rămân neverificate până la „Verificat azi” din admin.
+            if (! $c->ext_id) {
+                $c->verified_on ??= Day::today();
+            }
         });
         static::saved(function (Coupon $c) {
             if ($c->status === 'published') {

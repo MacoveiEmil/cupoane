@@ -19,8 +19,8 @@ class SitemapController extends Controller
             $urls[] = [route('deals'), now()];
         }
 
-        foreach (Catalog::storesWithOffers() as $s) {
-            if (Catalog::count($s) >= Seo::MIN_OFFERS_INDEX) {
+        foreach (\App\Models\Store::orderBy('name')->get() as $s) {
+            if ($s->indexable(Catalog::count($s))) {
                 $urls[] = [$s->url(), $s->updated_on ?? $s->updated_at];
             }
         }

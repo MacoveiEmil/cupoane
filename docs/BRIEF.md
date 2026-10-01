@@ -11,7 +11,7 @@ Obiective, în ordine: **poziții de top în Google**, viteză maximă, oferte m
 - Admin: **Filament 5** la `/admin` (cupoane, magazine, categorii, deal-uri, pagini, texte, import 2Performant).
 - Frontend: HTML generat pe server, **un singur CSS inline** (~25 KB minificat, ~5,5 KB gzip), **un singur JS vanilla** (`public/js/site.js`, cu `defer`). Fără build (fără Vite/npm), fără jQuery, fără fonturi web, fără scripturi terțe.
 - Cache: cache complet de pagini în aplicație (golit la orice modificare din admin) + headere pentru LiteSpeed și Cloudflare. Rutele publice nu au sesiune, cookie-uri sau CSRF, ca să poată fi cache-uite oriunde.
-- SEO în cod: `app/Support/Seo.php` (title, description, canonical, noindex sub 3 oferte, schema JSON-LD: Organization, WebSite+SearchAction, BreadcrumbList, FAQPage), `sitemap.xml` și `robots.txt` generate dinamic.
+- SEO în cod: `app/Support/Seo.php` (title, description, canonical, noindex pentru magazinele fără oferte și fără text propriu / categoriile sub 3 oferte, schema JSON-LD: Organization, WebSite, BreadcrumbList, FAQPage), `sitemap.xml` și `robots.txt` generate dinamic.
 - Programări (cron): curățenie zilnică la 00:05 (oferte expirate, cu lock), import 2Performant la 06:30, ora României.
 
 ## Hosting

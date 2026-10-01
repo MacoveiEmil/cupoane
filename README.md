@@ -35,7 +35,7 @@ docker compose exec app php artisan storage:link
 | Meniu | Ce faci acolo |
 |---|---|
 | **Pe scurt** (prima pagină) | Oferte active, ciorne de verificat, oferte de reverificat, click-uri pe 7 zile, oferte care expiră curând |
-| **Conținut → Cupoane** | Taburi: *Toate / Active pe site / Ciorne / De reverificat / Expiră în 7 zile*. Butonul **„Verificat azi”** publică oferta și îi pune data verificării. Selectezi mai multe → „Verificat azi și publică” sau „Mută în coș”. |
+| **Conținut → Cupoane** | Taburi: *Toate / Active pe site / Ciorne / De reverificat / Expiră în 7 zile*. Butonul **„Verificat azi”** publică oferta și îi pune data verificării. Ofertele importate apar pe site cu „Adăugat pe …” până le verifici; „Verificat pe …” apare doar după „Verificat azi”. Selectezi mai multe → „Verificat azi și publică” sau „Mută în coș”. |
 | **Conținut → Magazine** | Nume, adresă, link de afiliere, logo (se convertește automat în WebP), categorii, **„Ordine pe homepage”** (1, 2, 3 = cardurile mari), texte „Despre”, informații utile, întrebări frecvente |
 | **Conținut → Deal-uri** | **„Adaugă deal rapid”**: lipești URL-ul produsului, alegi magazinul → deeplink 2Performant generat automat; completezi prețuri și imagine |
 | **Organizare → Categorii / Etichete** | Categorii pe 2 niveluri; etichetele tematice (`/oferte/transport-gratuit` etc.) |
@@ -70,23 +70,25 @@ Cerințe hosting: **PHP 8.3** cu extensiile `intl`, `gd`, `pdo_mysql`, `mbstring
    Programările din `routes/console.php`: curățarea zilnică la **00:05** și importul 2Performant la **06:30** (ora României).
 7. Intri în `/admin`, schimbi parola din profil și completezi **Setări și texte → 2Performant**.
 
+Înainte de lansare: **[docs/CHECKLIST.md](docs/CHECKLIST.md)**.
+
 **Actualizare**: urci fișierele noi, apoi `composer install --no-dev -o`, `php artisan migrate --force`, `php artisan optimize`.
 
 ## 4. Viteză și cache
 
-- **Cache complet de pagini în aplicație**: prima vizită generează HTML-ul, următoarele îl primesc în milisecunde. Se golește automat la orice modificare din admin, la import și la curățarea zilnică; o schimbare de CSS/JS regenerează singură paginile.
+- **Cache complet de pagini în aplicație**: prima vizită generează HTML-ul, următoarele îl primesc în milisecunde. Se golește automat la orice modificare din admin, la import și la curățarea zilnică; o schimbare de CSS/JS regenerează singură paginile. Orice pagină din cache (aplicație și LiteSpeed) **expiră singură la miezul nopții**, când pot expira oferte; Cloudflare primește maximum 5 minute (`s-maxage=300`).
 - Paginile publice **nu setează cookie-uri și nu pornesc sesiuni**, deci pot fi cache-uite și de server/CDN.
 - **LiteSpeed**: răspunsurile trimit `X-LiteSpeed-Cache-Control`; la modificări se trimite `X-LiteSpeed-Purge`. Nu e nevoie de pluginul LiteSpeed Cache.
 - **Cloudflare**: *Cache Rules* → bypass pentru `/go/*`, `/api/*`, `/admin*`; Brotli ON, Rocket Loader OFF, Email Obfuscation OFF. Apoi bifează **Setări și texte → Reguli → Cloudflare**.
 - CSS inline (~6 KB comprimat), un singur JS mic cu `defer`, fără fonturi web, logo-uri WebP cu dimensiuni explicite.
 
-Lighthouse mobil (local): homepage 100/100/100/100; magazin 100/100/100 (SEO „noindex” intenționat sub 3 oferte).
+Lighthouse mobil (local): homepage 100/100/100/100.
 
 ## 5. SEO
 
 - Titluri și descrieri generate automat cu luna, anul și numărul de oferte (ex. „Cod reducere Answear.ro octombrie 2026 — vouchere, reduceri și cupoane”).
-- `noindex` pe: căutare, paginări ≥ 2, magazine / categorii / etichete cu **sub 3 oferte active**; `/go/` e exclus din `robots.txt`.
-- Schema JSON-LD: Organization, WebSite cu SearchAction, BreadcrumbList, FAQPage (din întrebările magazinului).
+- `noindex` pe: căutare, paginări ≥ 2, categorii / etichete cu **sub 3 oferte active**, magazine **fără nicio ofertă activă și fără text „Despre”** (se poate forța indexarea din fișa magazinului); `/go/` e exclus din `robots.txt`.
+- Schema JSON-LD: Organization, WebSite, BreadcrumbList, FAQPage (din întrebările afișate pe pagină).
 - `sitemap.xml` cu doar paginile indexabile → trimite-l în Google Search Console.
 - Un singur H1 pe pagină, canonical corect, linkurile de ieșire `rel="sponsored nofollow"`.
 

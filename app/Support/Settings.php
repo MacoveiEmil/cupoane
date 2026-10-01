@@ -35,7 +35,7 @@ final class Settings
                 .'Introdu codul de reducere {magazin} la checkout | Lipește codul în câmpul pentru voucher din coș, înainte de plată, și verifică dacă reducerea a fost aplicată.',
             'store_method' => "Cum ajunge un cod {magazin} pe pagină?\n"
                 ."De unde vin codurile | Codurile vin direct de la {magazin}, prin rețeaua de afiliere 2Performant, sau sunt adăugate manual de echipa noastră.\n"
-                ."Cum le verificăm | Fiecare ofertă are data ultimei verificări afișată pe card. Ofertele fără dată de expirare sunt reverificate periodic.\n"
+                ."Cum le verificăm | Ofertele verificate de noi au pe card „Verificat pe” și data. Cele preluate automat apar cu „Adăugat pe”, până le verificăm. Ofertele fără dată de expirare sunt reverificate periodic.\n"
                 ."Cum calculăm rata de succes | După fiecare cod poți vota „A funcționat?”. Rata de succes apare când există suficiente voturi.\n"
                 .'Când le retragem | Ofertele expirate dispar automat de pe site, din aceeași zi.',
             'store_tips' => "Cum economisești la {magazin}\n"
