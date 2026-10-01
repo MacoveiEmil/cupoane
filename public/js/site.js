@@ -21,15 +21,26 @@
       t.remove();
     });
   }
+  function say(status, msg, href) {
+    status.textContent = msg;
+    if (!href) return;
+    var a = d.createElement('a');
+    a.href = href; a.target = '_blank'; a.rel = 'sponsored nofollow noopener';
+    a.textContent = 'Mergi la magazin ↗';
+    status.appendChild(d.createTextNode(' · ')); status.appendChild(a);
+  }
   d.addEventListener('click', function (e) {
     var btn = e.target.closest('.btn--code');
     if (!btn) return;
     var code = btn.getAttribute('data-code') || '';
-    var box = btn.querySelector('.btn__code');
     var status = btn.closest('.card').querySelector('.card__status');
+    var again = btn.classList.contains('is-open');
+    // Primul click: dezvăluie, copiază și deschide magazinul. Următoarele: doar copiază (fără tab-uri noi).
+    if (again) e.preventDefault();
+    var box = btn.querySelector('.btn__code');
     box.textContent = code; box.removeAttribute('aria-hidden');
     btn.classList.add('is-open');
-    copy(code).then(function () { status.textContent = 'Copiat! 🎉'; }, function () { status.textContent = 'Selectează codul și copiază-l'; });
+    copy(code).then(function () { say(status, again ? 'Copiat din nou!' : 'Copiat! 🎉', btn.href); }, function () { say(status, 'Selectează codul și copiază-l', btn.href); });
   });
 
   /* Voturi „A funcționat?” */

@@ -57,7 +57,6 @@ final class Settings
             // Reguli
             'recheck_days' => 30,
             'vote_min' => 5,
-            'trust_cf_ip' => false,
             'auto_stores' => true,
             // 2Performant
             'tp_enabled' => true,

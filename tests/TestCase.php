@@ -13,6 +13,7 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
         // Cache-ul de pagini în memorie, ca testele să nu se influențeze între ele.
         config(['cache.stores.pages' => ['driver' => 'array']]);
+        \App\Support\Catalog::reset();
     }
 
     protected function store(array $attrs = []): Store

@@ -39,15 +39,16 @@ class GoController extends Controller
     private function resolve(string $key): array
     {
         $home = url('/');
-        if (ctype_digit($key) && ($c = Coupon::with('store')->find((int) $key))) {
+        // Și ofertele din coș (expirate, curățate): linkurile vechi duc la pagina magazinului, nu pe homepage.
+        if (ctype_digit($key) && ($c = Coupon::withTrashed()->with('store')->find((int) $key))) {
             $fallback = $c->store ? $c->store->url() : $home;
 
-            return $c->isActive() ? [$this->safe($c->targetUrl()), 1, $c->id, $fallback] : ['', 0, 0, $fallback];
+            return ! $c->trashed() && $c->isActive() ? [$this->safe($c->targetUrl()), 1, $c->id, $fallback] : ['', 0, 0, $fallback];
         }
-        if (preg_match('/^d(\d+)$/', $key, $m) && ($d = Deal::with('store')->find((int) $m[1]))) {
+        if (preg_match('/^d(\d+)$/', $key, $m) && ($d = Deal::withTrashed()->with('store')->find((int) $m[1]))) {
             $fallback = $d->store ? $d->store->url() : $home;
 
-            return $d->isActive() ? [$this->safe($d->targetUrl()), 2, $d->id, $fallback] : ['', 0, 0, $fallback];
+            return ! $d->trashed() && $d->isActive() ? [$this->safe($d->targetUrl()), 2, $d->id, $fallback] : ['', 0, 0, $fallback];
         }
         if ($s = Store::where('slug', $key)->first()) {
             return [$this->safe($s->targetUrl()), 3, $s->id, $s->url()];

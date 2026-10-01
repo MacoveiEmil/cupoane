@@ -8,6 +8,7 @@ use App\Models\Program;
 use App\Models\Store;
 use App\Models\Tag;
 use App\Support\Day;
+use App\Support\PageCache;
 use App\Support\Settings;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -78,33 +79,35 @@ final class Importer
         @set_time_limit($budget + 30);
         try {
             $state['error'] = '';
-            while (self::running($state) && microtime(true) - $t0 < $budget) {
-                if ($state['phase'] === 'programs') {
-                    [$items, $next] = $connector->programs($state['cursor']);
-                    foreach ($items as $p) {
-                        if ($p->accepted !== false) {
-                            $state['stats']['programs']++;
-                            if (self::upsertProgram($p)) {
-                                $state['stats']['stores_created']++;
+            PageCache::batch(function () use (&$state, $connector, $network, $t0, $budget) {
+                while (self::running($state) && microtime(true) - $t0 < $budget) {
+                    if ($state['phase'] === 'programs') {
+                        [$items, $next] = $connector->programs($state['cursor']);
+                        foreach ($items as $p) {
+                            if ($p->accepted !== false) {
+                                $state['stats']['programs']++;
+                                if (self::upsertProgram($p)) {
+                                    $state['stats']['stores_created']++;
+                                }
                             }
                         }
-                    }
-                    $state['cursor'] = $next;
-                    $state['phase'] = $next === null ? 'offers' : 'programs';
-                } elseif ($state['phase'] === 'offers') {
-                    [$items, $next] = $connector->offers($state['cursor']);
-                    foreach ($items as $o) {
-                        $state['stats'][self::saveOffer($o, $network)]++;
-                    }
-                    $state['cursor'] = $next;
-                    $state['phase'] = $next === null ? 'logos' : 'offers';
-                } else {
-                    if (self::fetchLogos($t0 + $budget) === 0) {
-                        $state['phase'] = 'done';
-                        $state['finished'] = now()->toIso8601String();
+                        $state['cursor'] = $next;
+                        $state['phase'] = $next === null ? 'offers' : 'programs';
+                    } elseif ($state['phase'] === 'offers') {
+                        [$items, $next] = $connector->offers($state['cursor']);
+                        foreach ($items as $o) {
+                            $state['stats'][self::saveOffer($o, $network)]++;
+                        }
+                        $state['cursor'] = $next;
+                        $state['phase'] = $next === null ? 'logos' : 'offers';
+                    } else {
+                        if (self::fetchLogos($t0 + $budget) === 0) {
+                            $state['phase'] = 'done';
+                            $state['finished'] = now()->toIso8601String();
+                        }
                     }
                 }
-            }
+            });
         } catch (ImportException $e) {
             $state['error'] = $e->getMessage();
         } finally {

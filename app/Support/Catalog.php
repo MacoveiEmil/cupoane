@@ -17,6 +17,12 @@ final class Catalog
 {
     private static array $memo = [];
 
+    /** Golește memoria per request (teste, procese de lungă durată). */
+    public static function reset(): void
+    {
+        self::$memo = [];
+    }
+
     /** @return array<int,int> store_id => oferte active */
     public static function storeCounts(): array
     {
@@ -32,6 +38,27 @@ final class Catalog
     public static function storesWithOffers(): Collection
     {
         return self::$memo['stores'] ??= Store::whereIn('id', array_keys(self::storeCounts()))->orderBy('name')->get();
+    }
+
+    /**
+     * Indexul A–Z: magazinele cu oferte + cele fără oferte dar indexabile (text „Despre” / forțate din admin),
+     * ca acestea să aibă măcar un link intern. Pe homepage, footer, căutare și „similare” rămân doar cele cu oferte.
+     */
+    public static function storesIndexable(): Collection
+    {
+        return self::$memo['indexable'] ??= Store::orderBy('name')->get()->filter(fn (Store $s) => $s->indexable(self::count($s)))->values();
+    }
+
+    /** Ultima modificare reală a ofertelor (pentru lastmod în sitemap). */
+    public static function lastChange(?array $storeIds = null): ?\Carbon\CarbonInterface
+    {
+        $q = Coupon::withTrashed();
+        if ($storeIds !== null) {
+            $q->whereIn('store_id', $storeIds);
+        }
+        $max = $q->max('updated_at');
+
+        return $max ? \Illuminate\Support\Carbon::parse($max) : null;
     }
 
     /** Magazine populare: ordinea din admin (home_order), completate cu cele mai multe oferte. */

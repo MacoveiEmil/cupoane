@@ -16,7 +16,8 @@ class CachePage
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->isMethod('GET') || $request->query('nocache')) {
+        // ?nocache doar local: în producție ar permite oricui să ocolească cache-ul și să încarce serverul.
+        if (! $request->isMethod('GET') || ($request->query('nocache') && app()->isLocal())) {
             return $next($request);
         }
 

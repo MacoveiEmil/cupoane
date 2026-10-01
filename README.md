@@ -40,7 +40,7 @@ docker compose exec app php artisan storage:link
 | **Conținut → Deal-uri** | **„Adaugă deal rapid”**: lipești URL-ul produsului, alegi magazinul → deeplink 2Performant generat automat; completezi prețuri și imagine |
 | **Organizare → Categorii / Etichete** | Categorii pe 2 niveluri; etichetele tematice (`/oferte/transport-gratuit` etc.) |
 | **Site → Pagini** | Despre noi, Contact, Termeni… (editor de text; titlurile H2 devin cuprins); bifezi ce apare în footer |
-| **Site → Setări și texte** | **Texte site**: titlul mare de pe homepage, subtitlul, textul SEO, textul din footer, mențiunea de afiliere. **Reguli**: zile până la reverificare, pragul de voturi, Cloudflare, creare automată de magazine. **2Performant**: datele de acces (criptate) |
+| **Site → Setări și texte** | **Texte site**: titlul mare de pe homepage, subtitlul, textul SEO, textul din footer, mențiunea de afiliere. **Texte pagini**: blocurile de pe paginile de magazin / categorie și întrebările frecvente. **Reguli**: zile până la reverificare, pragul de voturi, creare automată de magazine. **2Performant**: datele de acces (criptate) |
 | **Site → Import din rețele** | „Importă acum” cu progres live; programele neasociate cu un magazin |
 
 Orice salvare în admin golește automat cache-ul de pagini, deci modificarea apare imediat pe site.
@@ -79,7 +79,7 @@ Cerințe hosting: **PHP 8.3** cu extensiile `intl`, `gd`, `pdo_mysql`, `mbstring
 - **Cache complet de pagini în aplicație**: prima vizită generează HTML-ul, următoarele îl primesc în milisecunde. Se golește automat la orice modificare din admin, la import și la curățarea zilnică; o schimbare de CSS/JS regenerează singură paginile. Orice pagină din cache (aplicație și LiteSpeed) **expiră singură la miezul nopții**, când pot expira oferte; Cloudflare primește maximum 5 minute (`s-maxage=300`).
 - Paginile publice **nu setează cookie-uri și nu pornesc sesiuni**, deci pot fi cache-uite și de server/CDN.
 - **LiteSpeed**: răspunsurile trimit `X-LiteSpeed-Cache-Control`; la modificări se trimite `X-LiteSpeed-Purge`. Nu e nevoie de pluginul LiteSpeed Cache.
-- **Cloudflare**: *Cache Rules* → bypass pentru `/go/*`, `/api/*`, `/admin*`; Brotli ON, Rocket Loader OFF, Email Obfuscation OFF. Apoi bifează **Setări și texte → Reguli → Cloudflare**.
+- **Cloudflare**: *Cache Rules* → bypass pentru `/go/*`, `/api/*`, `/admin*`, `/livewire*`, `/cauta*`; pentru restul paginilor „Eligible for cache” cu „Respect origin” (serverul trimite `s-maxage=300`). Brotli ON, Rocket Loader OFF, Email Obfuscation OFF. IP-ul real al vizitatorilor e preluat automat doar de la Cloudflare (nu mai e nevoie de nicio setare).
 - CSS inline (~6 KB comprimat), un singur JS mic cu `defer`, fără fonturi web, logo-uri WebP cu dimensiuni explicite.
 
 Lighthouse mobil (local): homepage 100/100/100/100.

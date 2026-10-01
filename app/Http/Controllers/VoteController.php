@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Coupon;
 use App\Support\Catalog;
 use App\Support\Day;
-use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -36,10 +35,8 @@ class VoteController extends Controller
             return response()->json(['ok' => false, 'reason' => 'voted'] + $summary(), 409);
         }
 
+        // IP-ul real: în producție proxy-urile de încredere sunt doar Cloudflare (App\Http\Middleware\TrustProxies).
         $ip = (string) $request->ip();
-        if (Settings::get('trust_cf_ip') && filter_var($request->header('CF-Connecting-IP'), FILTER_VALIDATE_IP)) {
-            $ip = (string) $request->header('CF-Connecting-IP');
-        }
         $hash = hash_hmac('sha256', $ip.'|'.$coupon->id.'|'.Day::today()->toDateString(), (string) config('app.key'));
         if (! DB::table('vote_guards')->insertOrIgnore(['hash' => $hash, 'created_at' => now()])) {
             return response()->json(['ok' => false, 'reason' => 'voted'] + $summary(), 429);

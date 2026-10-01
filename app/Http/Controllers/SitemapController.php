@@ -14,9 +14,11 @@ class SitemapController extends Controller
 {
     public function sitemap()
     {
-        $urls = [[url('/'), now()], [route('stores'), now()], [route('categories'), now()], [route('top'), now()]];
+        // lastmod = ultima modificare reală de oferte (Google ignoră lastmod-ul care se schimbă la fiecare citire).
+        $last = Catalog::lastChange();
+        $urls = [[url('/'), $last], [route('stores'), $last], [route('categories'), $last], [route('top'), $last]];
         if (\App\Models\Deal::active()->exists()) {
-            $urls[] = [route('deals'), now()];
+            $urls[] = [route('deals'), \App\Models\Deal::max('updated_at') ? \Illuminate\Support\Carbon::parse(\App\Models\Deal::max('updated_at')) : null];
         }
 
         foreach (\App\Models\Store::orderBy('name')->get() as $s) {
@@ -26,17 +28,17 @@ class SitemapController extends Controller
         }
         foreach (Catalog::categoryTree(true) as $row) {
             if ($row['offers'] >= Seo::MIN_OFFERS_INDEX) {
-                $urls[] = [route('category', $row['category']), now()];
+                $urls[] = [route('category', $row['category']), Catalog::lastChange($row['ids'])];
             }
             foreach ($row['children'] as $ch) {
                 if ($ch['offers'] >= Seo::MIN_OFFERS_INDEX) {
-                    $urls[] = [route('category', $ch['category']), now()];
+                    $urls[] = [route('category', $ch['category']), Catalog::lastChange($ch['ids'])];
                 }
             }
         }
         foreach (Tag::all() as $t) {
             if ($t->coupons()->active()->count() >= Seo::MIN_OFFERS_INDEX) {
-                $urls[] = [route('tag', $t), now()];
+                $urls[] = [route('tag', $t), null];
             }
         }
         foreach (Page::where('body', '!=', '')->get() as $p) {
@@ -55,7 +57,7 @@ class SitemapController extends Controller
     public function robots()
     {
         // Și pe linkul de preview (trycloudflare) roboții pot citi paginile, ca un AI să poată verifica site-ul;
-        // de indexare Google ne ferește meta noindex, pus pe toate paginile de preview (Seo::isPreviewHost).
+        // de indexare Google ne ferește meta noindex, pus pe toate paginile din afara producției (Seo::isPreview).
         $body = "User-agent: *\nDisallow: /go/\nDisallow: /admin\nDisallow: /cauta\nDisallow: /api/\n\nSitemap: ".url('/sitemap.xml')."\n";
 
         return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);

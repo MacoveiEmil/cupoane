@@ -42,13 +42,16 @@ class CleanupCommand extends Command
         ];
 
         if (! $dry) {
-            foreach ([Coupon::class, Deal::class] as $model) {
-                $expired($model)->each(fn ($o) => $o->delete());
-                $stale($model)->update(['status' => 'draft', 'needs_recheck' => true]);
-                $purgeable($model)->each(fn ($o) => $o->forceDelete());
-            }
-            DB::table('vote_guards')->where('created_at', '<', now()->subDays(2))->delete();
-            PageCache::flush();
+            // O singură golire a cache-ului la final, nu câte una pentru fiecare ofertă ștearsă.
+            PageCache::batch(function () use ($expired, $stale, $purgeable) {
+                foreach ([Coupon::class, Deal::class] as $model) {
+                    $expired($model)->each(fn ($o) => $o->delete());
+                    $stale($model)->update(['status' => 'draft', 'needs_recheck' => true]);
+                    $purgeable($model)->each(fn ($o) => $o->forceDelete());
+                }
+                DB::table('vote_guards')->where('created_at', '<', now()->subDays(2))->delete();
+                PageCache::flush();
+            });
             cache()->forever('last_cleanup', ['at' => now()->toIso8601String()] + $counts);
         }
 

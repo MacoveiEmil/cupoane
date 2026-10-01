@@ -37,18 +37,23 @@
         @if ($c->code)
             <a class="btn btn--code" href="{{ $c->goUrl() }}" target="_blank" rel="sponsored nofollow noopener" data-code="{{ $c->code }}">
                 <span class="btn__code" aria-hidden="true">{{ $c->masked() }}</span>
+                <span class="btn__again" aria-hidden="true"><svg width="14" height="14"><use href="#i-copy"/></svg>Copiază din nou</span>
                 <span class="btn__label"><svg width="16" height="16"><use href="#i-copy"/></svg>Arată codul</span>
             </a>
             <noscript><p class="card__nojs">Cod: <code>{{ $c->code }}</code></p></noscript>
+            {{-- După dezvăluire: „Copiat!” + link spre magazin, în același rând (spațiu rezervat, fără layout shift). --}}
+            <p class="card__status" aria-live="polite"></p>
         @else
             <a class="btn btn--go" href="{{ $c->goUrl() }}" target="_blank" rel="sponsored nofollow noopener">Vezi oferta <svg width="16" height="16"><use href="#i-out"/></svg></a>
         @endif
-        <p class="card__status" aria-live="polite"></p>
+        {{-- „A funcționat?” doar la coduri (la ofertele fără cod nu are sens). --}}
+        @if ($c->code)
         <div class="vote" data-vote="{{ $c->id }}">
             <span class="vote__q">A funcționat?</span>
             <button type="button" class="vote__btn" data-v="1" aria-label="Da, a funcționat"><svg width="14" height="14"><use href="#i-up"/></svg>Da</button>
             <button type="button" class="vote__btn" data-v="0" aria-label="Nu a funcționat"><svg width="14" height="14"><use href="#i-down"/></svg>Nu</button>
             <span class="vote__rate">@if ($v && $v['rate'] !== null){{ $v['rate'] }}% succes · {{ $v['total'] }} voturi @endif</span>
         </div>
+        @endif
     </div>
 </article>

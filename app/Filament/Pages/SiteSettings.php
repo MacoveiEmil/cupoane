@@ -78,7 +78,6 @@ class SiteSettings extends Page
                     TextInput::make('recheck_days')->label('Reverificare oferte fără expirare (zile)')->numeric()->minValue(7)->maxValue(365)->required()
                         ->helperText('După acest interval fără verificare, oferta trece în ciornă, la „De reverificat”.'),
                     TextInput::make('vote_min')->label('Rata „A funcționat” apare de la (voturi)')->numeric()->minValue(1)->maxValue(100)->required(),
-                    Toggle::make('trust_cf_ip')->label('Site-ul e în spatele Cloudflare (IP real din CF-Connecting-IP pentru voturi)'),
                     Toggle::make('auto_stores')->label('La import, creează automat magazine pentru programele acceptate'),
                 ]),
                 Tab::make('2Performant')->icon(Heroicon::OutlinedLink)->schema([

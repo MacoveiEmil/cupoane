@@ -56,7 +56,9 @@ class SiteController extends Controller
         return view('store', [
             'seo' => new Seo(
                 title: "Cod reducere {$store->name} {$ll} — vouchere, reduceri și cupoane",
-                description: "Vouchere, reduceri și cupoane {$store->name} verificate: ".Seo::plural($count, 'ofertă activă', 'oferte active')." în {$ll}. Actualizat la ".Day::human($store->updated_on ?? Day::today()).'.',
+                description: $count > 0
+                    ? "Vouchere, reduceri și cupoane {$store->name} verificate: ".Seo::plural($count, 'ofertă activă', 'oferte active')." în {$ll}. Actualizat la ".Day::human($store->updated_on ?? Day::today()).'.'
+                    : "Coduri de reducere {$store->name}: cum economisești la comenzi, transport, retur și reducerile obișnuite ale magazinului, plus magazine similare cu oferte active în {$ll}.",
                 canonical: $store->url(),
                 noindex: ! $store->indexable($count),
                 breadcrumbs: [['Magazine', route('stores')], [$store->name, $store->url()]],
@@ -65,7 +67,8 @@ class SiteController extends Controller
             'store' => $store,
             'coupons' => $coupons,
             'deals' => $store->deals()->active()->latest('id')->take(6)->get(),
-            'similar' => Catalog::similar($store, 6),
+            // Fără categorii comune, pagina goală primește măcar magazinele populare (nu rămâne fundătură).
+            'similar' => ($sim = Catalog::similar($store, 6))->isNotEmpty() || $count > 0 ? $sim : Catalog::popular(4)->where('id', '!=', $store->id)->values(),
             'votes' => Catalog::votes($coupons->pluck('id')),
             'h1' => Settings::text('store_h1', $vars),
             'guides' => ['howto' => Settings::block('store_howto', $vars), 'method' => Settings::block('store_method', $vars), 'tips' => Settings::block('store_tips', $vars)],
@@ -90,7 +93,7 @@ class SiteController extends Controller
 
     public function stores()
     {
-        $groups = Catalog::storesWithOffers()->groupBy(function ($s) {
+        $groups = Catalog::storesIndexable()->groupBy(function ($s) {
             $l = mb_strtoupper(mb_substr(\Illuminate\Support\Str::ascii($s->name), 0, 1));
 
             return ctype_alpha($l) ? $l : '0–9';

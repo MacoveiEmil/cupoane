@@ -22,6 +22,8 @@ Route::withoutMiddleware($stateless)->group(function () {
     // Redirect de afiliere și vot: niciodată din cache.
     Route::get('/go/{key}', GoController::class)->where('key', '[A-Za-z0-9\-]+')->name('go');
     Route::post('/api/vote', VoteController::class)->middleware('throttle:30,1')->name('vote');
+    // Căutarea nu intră în cache (fiecare text ar crea o intrare nouă); e noindex și limitată.
+    Route::get('/cauta', [SiteController::class, 'search'])->middleware('throttle:60,1')->name('search');
 
     Route::middleware(CachePage::class)->group(function () {
         Route::get('/', [SiteController::class, 'home'])->name('home');
@@ -32,7 +34,6 @@ Route::withoutMiddleware($stateless)->group(function () {
         Route::get('/oferte/{tag:slug}', [SiteController::class, 'tag'])->name('tag');
         Route::get('/deal-uri', [SiteController::class, 'deals'])->name('deals');
         Route::get('/top-oferte', [SiteController::class, 'top'])->name('top');
-        Route::get('/cauta', [SiteController::class, 'search'])->name('search');
         Route::get('/magazine.json', [SiteController::class, 'searchIndex'])->name('search.index');
         Route::get('/sitemap.xml', [SitemapController::class, 'sitemap']);
         Route::get('/robots.txt', [SitemapController::class, 'robots']);

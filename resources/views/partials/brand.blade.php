@@ -11,7 +11,8 @@
         </span>
         <span class="brand__txt">
             <span class="brand__name">{{ $s->name }}</span>
-            <span class="brand__deal">{{ $best !== '' ? $best : \App\Support\Seo::plural(\App\Support\Catalog::count($s), 'ofertă', 'oferte') }}</span>
+            @php($n = \App\Support\Catalog::count($s))
+            <span class="brand__deal{{ $n === 0 ? ' brand__deal--none' : '' }}">{{ $best !== '' ? $best : ($n > 0 ? \App\Support\Seo::plural($n, 'ofertă', 'oferte') : 'fără coduri active acum') }}</span>
         </span>
     </a>
 </li>

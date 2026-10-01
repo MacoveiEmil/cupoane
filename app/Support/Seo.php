@@ -21,17 +21,15 @@ final class Seo
         public string $type = 'website',
     ) {
         $this->canonical ??= url()->current();
-        if (self::isPreviewHost()) {
-            $this->noindex = true; // linkurile temporare de previzualizare nu se indexează
+        if (self::isPreview()) {
+            $this->noindex = true; // tot ce nu e producție (local, tunel de preview) nu se indexează
         }
     }
 
-    /** Link temporar de previzualizare (Cloudflare Tunnel): niciodată indexat. */
-    public static function isPreviewHost(): bool
+    /** Orice mediu în afară de producție (APP_ENV). Nu depinde de host, ca să nu poată fi păcălit prin antete. */
+    public static function isPreview(): bool
     {
-        $host = request()->getHost();
-
-        return str_ends_with($host, '.trycloudflare.com');
+        return ! app()->isProduction();
     }
 
     public static function site(): string

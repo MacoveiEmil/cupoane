@@ -43,8 +43,33 @@ final class PageCache
         return 'p:'.sha1($request->url().'?'.http_build_query($query).'|'.Assets::version());
     }
 
+    private static int $paused = 0;
+
+    private static bool $dirty = false;
+
+    /**
+     * Operații în lot (import, curățenie): golirile cerute de fiecare ofertă salvată se adună într-una singură, la final.
+     */
+    public static function batch(callable $fn): mixed
+    {
+        self::$paused++;
+        try {
+            return $fn();
+        } finally {
+            if (--self::$paused === 0 && self::$dirty) {
+                self::$dirty = false;
+                self::flush();
+            }
+        }
+    }
+
     public static function flush(): void
     {
+        if (self::$paused > 0) {
+            self::$dirty = true;
+
+            return;
+        }
         self::store()->flush();
         // Pe LiteSpeed, același răspuns cere și golirea cache-ului serverului (dacă e folosit).
         if (! app()->runningInConsole() && ! headers_sent()) {

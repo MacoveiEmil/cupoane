@@ -4,7 +4,7 @@ Bifează fiecare punct înainte să trimiți domeniul în Google Search Console.
 
 ## Server (cPanel / LiteSpeed)
 - [ ] Proiectul stă **în afara** `public_html` (ex. `/home/UTILIZATOR/cupoane`), iar **Document Root**-ul domeniului e folderul `public/` al proiectului. Test: `https://domeniu.ro/.env` și `https://domeniu.ro/composer.json` trebuie să dea 404.
-- [ ] `.env`: `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://domeniu.ro`, `APP_KEY` generat.
+- [ ] `.env`: `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://domeniu.ro` (exact domeniul final: canonical-ul și linkurile vin de aici), `APP_KEY` generat, `CACHE_STORE=file`.
 - [ ] PHP 8.3 cu `intl`, `gd`, `pdo_mysql`, `mbstring`, `fileinfo`, `zip`; **OPcache activ** (cPanel → Select PHP Version → Options).
 - [ ] La fiecare deploy: `composer install --no-dev -o`, `php artisan migrate --force`, `php artisan optimize`.
 - [ ] **Cron**: întreabă providerul care e frecvența minimă. Ideal la fiecare minut; merge și la 5 minute (curățarea de la 00:05 și importul de la 06:30 rulează atunci la prima trecere a cron-ului).
@@ -18,9 +18,9 @@ Bifează fiecare punct înainte să trimiți domeniul în Google Search Console.
 ## Cloudflare
 - [ ] Proxy activ (nor portocaliu), SSL **Full (strict)**, HSTS activ.
 - [ ] Brotli ON, **Rocket Loader OFF**, **Email Obfuscation OFF**, fără Web Analytics injectat automat (CSP-ul site-ului blochează scripturile externe).
-- [ ] Cache Rules: **bypass** pentru `/go/*`, `/api/*`, `/admin*`, `/livewire*`, `/cauta*`. Dacă activezi cache pentru HTML, respectă `s-maxage` de la server (5 minute).
+- [ ] Cache Rules: **bypass** pentru `/go/*`, `/api/*`, `/admin*`, `/livewire*`, `/cauta*`. Pentru restul: **Eligible for cache** + **Edge TTL: Respect origin** (serverul trimite `s-maxage=300`, adică 5 minute). Fără regula asta, Cloudflare nu pune HTML în cache și fiecare vizită ajunge la server.
 - [ ] **Security → Bots / AI Crawl Control**: decide explicit dacă blochezi roboții AI. Pentru apariția în răspunsurile ChatGPT / Perplexity / Google AI, lasă permise cel puțin `OAI-SearchBot`, `ChatGPT-User`, `PerplexityBot`, `Claude-User`.
-- [ ] Bifează **Setări și texte → Reguli → Cloudflare** (IP-ul real pentru voturi).
+- [ ] După lansare, verifică într-un log / la un vot că aplicația vede IP-ul real al vizitatorului (nu un IP Cloudflare). Unele hostinguri LiteSpeed înlocuiesc deja IP-ul la nivel de server; dacă providerul pune alt proxy în față, adaugă-l în `app/Http/Middleware/TrustProxies.php`.
 
 ## SEO (verificare după lansare)
 - [ ] `https://domeniu.ro/robots.txt` **nu** conține `Disallow: /` simplu și are linia `Sitemap:`.

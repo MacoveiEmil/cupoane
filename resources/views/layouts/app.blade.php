@@ -15,6 +15,11 @@
 
 <meta property="og:url" content="{{ $seo->canonical }}">
 <meta property="og:site_name" content="{{ config('app.name') }}">
+<meta property="og:image" content="{{ asset('og.jpg') }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vouchere, reduceri și cupoane verificate">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>{!! \App\Support\Assets::css() !!}</style>

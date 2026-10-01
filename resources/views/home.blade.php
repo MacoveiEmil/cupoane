@@ -7,7 +7,8 @@
         <div class="intro__in">
             <div>
                 <h1 class="intro__title">{{ $site['hero_title'] }}</h1>
-                <p class="intro__meta"><b>{{ \App\Support\Seo::plural($stats['offers'], 'ofertă activă', 'oferte active') }}</b> la <b>{{ \App\Support\Seo::plural($stats['stores'], 'magazin', 'magazine') }}</b> · actualizat azi, {{ \App\Support\Day::dayMonth() }}</p>
+                {{-- Cifrele apar doar de la 100 de oferte; sub prag ar transmite că site-ul e mic. --}}
+                <p class="intro__meta">@if ($stats['offers'] >= 100)<b>{{ \App\Support\Seo::plural($stats['offers'], 'ofertă activă', 'oferte active') }}</b> la <b>{{ \App\Support\Seo::plural($stats['stores'], 'magazin', 'magazine') }}</b> · actualizat azi, {{ \App\Support\Day::dayMonth() }}@else Actualizat azi, {{ \App\Support\Day::dayMonth() }}@endif</p>
             </div>
             @include('partials.search', ['big' => true])
         </div>

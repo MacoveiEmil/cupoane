@@ -14,7 +14,7 @@
         </span>
         <div class="store__main">
             <h1>{{ $h1 }}</h1>
-            <p class="store__meta"><span><b>{{ \App\Support\Seo::plural($coupons->count(), 'ofertă activă', 'oferte active') }}</b></span>@foreach ($store->categories as $cat)<a href="{{ route('category', $cat) }}">{{ $cat->name }}</a>@endforeach</p>
+            <p class="store__meta">@if ($coupons->isNotEmpty())<span><b>{{ \App\Support\Seo::plural($coupons->count(), 'ofertă activă', 'oferte active') }}</b></span>@endif@foreach ($store->categories as $cat)<a href="{{ route('category', $cat) }}">{{ $cat->name }}</a>@endforeach</p>
         </div>
         <a class="btn btn--go store__go" href="{{ $store->goUrl() }}" target="_blank" rel="sponsored nofollow noopener">Mergi la magazin <svg width="16" height="16"><use href="#i-out"/></svg></a>
     </header>
@@ -27,6 +27,9 @@
             <div class="empty">
                 <p><b>Momentan nu avem coduri active pentru {{ $store->name }}.</b></p>
                 <p>Ofertele expirate sunt scoase automat, așa că aici apar doar coduri valabile. Revino curând sau încearcă un magazin similar.</p>
+                @if ($similar->isNotEmpty())
+                    <ul class="brands empty__similar">@foreach ($similar->take(4) as $s) @include('partials.brand', ['s' => $s]) @endforeach</ul>
+                @endif
             </div>
         @endif
     </section>
@@ -57,7 +60,7 @@
     @include('partials.guide', ['b' => $guides['tips'], 'id' => 's-tips'])
     @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
 
-    @if ($similar->isNotEmpty())
+    @if ($coupons->isNotEmpty() && $similar->isNotEmpty())
         <section class="sec" aria-labelledby="s-sim">
             <div class="sec__head"><h2 id="s-sim">Magazine similare</h2></div>
             <ul class="brands">@foreach ($similar as $s) @include('partials.brand', ['s' => $s]) @endforeach</ul>
