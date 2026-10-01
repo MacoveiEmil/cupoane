@@ -50,12 +50,25 @@ class StoreForm
                     TextInput::make('program_id')->label('ID program'),
                 ]),
             ]),
-            Section::make('Texte pentru pagina magazinului')->columnSpanFull()->schema([
-                RichEditor::make('description')->label('Despre magazin')
-                    ->toolbarButtons(['bold', 'italic', 'link', 'h2', 'h3', 'bulletList', 'orderedList', 'undo', 'redo']),
-            ]),
+            Section::make('Conținut unic al paginii')->columnSpanFull()
+                ->description('Texte scrise doar pentru acest magazin (de tine sau de un script / AI: vezi „php artisan cupons:content”). Fără texte generale repetate pe toate paginile; ce rămâne gol nu apare pe site.')
+                ->schema([
+                    RichEditor::make('offers_text')->label('Text sub oferte')
+                        ->helperText('Apare imediat sub lista de coduri. 1–3 paragrafe despre reducerile obișnuite ale magazinului (cuvinte cheie: cod reducere, voucher, cupon + numele magazinului).')
+                        ->toolbarButtons(['bold', 'italic', 'link', 'bulletList', 'undo', 'redo']),
+                    RichEditor::make('description')->label('Despre magazin')
+                        ->toolbarButtons(['bold', 'italic', 'link', 'h3', 'bulletList', 'orderedList', 'undo', 'redo']),
+                    Repeater::make('howto')->label('Cum folosești codurile (pași)')->schema([
+                        TextInput::make('t')->label('Pas (H3)')->required()->maxLength(140),
+                        Textarea::make('p')->label('Explicație')->rows(2)->required(),
+                    ])->addActionLabel('Adaugă pas')->reorderable()->collapsible()->defaultItems(0)->maxItems(6),
+                    Repeater::make('tips')->label('Cum economisești (sfaturi)')->schema([
+                        TextInput::make('t')->label('Sfat (H3)')->required()->maxLength(140),
+                        Textarea::make('p')->label('Explicație')->rows(2)->required(),
+                    ])->addActionLabel('Adaugă sfat')->reorderable()->collapsible()->defaultItems(0)->maxItems(6),
+                ]),
             Section::make('Informații utile')->description('Apar pe pagina magazinului doar cele completate.')->columnSpanFull()->columns(3)->collapsible()->schema($info),
-            Section::make('Întrebări frecvente')->description('Apar pe pagină și ca rezultat îmbogățit în Google (FAQ).')->columnSpanFull()->collapsible()->schema([
+            Section::make('Întrebări frecvente')->description('3–5 întrebări specifice magazinului (ex.: cod pentru prima comandă, cumulare cu alte promoții, prag pentru transport gratuit). Apar sub oferte și în schema FAQPage. Linkuri în răspuns: [text](/adresa). Fără întrebări, secțiunea nu apare.')->columnSpanFull()->collapsible()->schema([
                 Repeater::make('faq')->label('')->schema([
                     TextInput::make('q')->label('Întrebare')->required(),
                     Textarea::make('a')->label('Răspuns')->rows(2)->required(),

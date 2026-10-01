@@ -27,7 +27,9 @@ Bifează fiecare punct înainte să trimiți domeniul în Google Search Console.
 - [ ] Sursa homepage-ului **nu** conține `noindex`.
 - [ ] `https://domeniu.ro/sitemap.xml` se deschide și conține magazinele.
 - [ ] Search Console: proprietate pe domeniu, sitemap trimis.
-- [ ] Rich Results Test pe o pagină de magazin: Breadcrumb valid.
+- [ ] Schema JSON-LD validată cu **validator.schema.org** (nu cu Rich Results Test, care nu mai afișează FAQ) pe homepage (Organization, WebSite, FAQPage) și pe un magazin cu întrebări completate (BreadcrumbList, FAQPage).
+- [ ] `/cum-verificam-codurile` are conținutul final (cine verifică, afiliere); `/metodologie` și `/intrebari-frecvente` fac 301.
+- [ ] Primele 20–30 de magazine au „Text sub oferte” și 3–5 întrebări proprii (`php artisan cupons:content`).
 
 ## Viteză
 - [ ] Antetele unei pagini (a doua încărcare): `X-LiteSpeed-Cache: hit` (dacă LiteSpeed Cache e activ pe server) sau `X-Page-Cache: HIT`.

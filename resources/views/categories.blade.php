@@ -29,6 +29,5 @@
             @endforeach
         </ul>
     @endif
-    @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
 </div>
 @endsection

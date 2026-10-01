@@ -3,6 +3,9 @@
     $exp = $c->expiryLabel();
     $v = $votes[$c->id] ?? null;
     $kind = $c->value_type === 'transport' ? 'ship' : (($c->value !== null && (float) $c->value > 0) ? 'val' : 'plain');
+    $uses = (int) ($v['uses'] ?? 0);
+    // „Folosit de X ori” (click-uri reale, fără roboți) apare de la 3 folosiri: sub prag nu convinge pe nimeni.
+    $usesText = $uses >= 3 ? 'Folosit de '.\App\Support\Seo::plural($uses, 'dată', 'ori') : '';
 @endphp
 <article class="card{{ ($feature ?? false) ? ' card--feature' : '' }}" id="c-{{ $c->id }}">
     @if (($feature ?? false) && $c->store)
@@ -41,10 +44,11 @@
                 <span class="btn__label"><svg width="16" height="16"><use href="#i-copy"/></svg>Arată codul</span>
             </a>
             <noscript><p class="card__nojs">Cod: <code>{{ $c->code }}</code></p></noscript>
-            {{-- După dezvăluire: „Copiat!” + link spre magazin, în același rând (spațiu rezervat, fără layout shift). --}}
-            <p class="card__status" aria-live="polite"></p>
+            {{-- Rând rezervat: „Folosit de X ori”, iar după dezvăluire „Copiat!” + link spre magazin (fără layout shift). --}}
+            <p class="card__status" aria-live="polite">@if ($usesText)<span class="card__uses">{{ $usesText }}</span>@endif</p>
         @else
             <a class="btn btn--go" href="{{ $c->goUrl() }}" target="_blank" rel="sponsored nofollow noopener">Vezi oferta <svg width="16" height="16"><use href="#i-out"/></svg></a>
+            @if ($usesText)<p class="card__status"><span class="card__uses">{{ $usesText }}</span></p>@endif
         @endif
         {{-- „A funcționat?” doar la coduri (la ofertele fără cod nu are sens). --}}
         @if ($c->code)

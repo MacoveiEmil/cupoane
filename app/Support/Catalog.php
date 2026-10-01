@@ -87,15 +87,18 @@ final class Catalog
         };
     }
 
-    public static function topOffers(int $limit): Collection
+    /** Top: întâi ofertele marcate „Top” în admin, apoi cele mai mari reduceri (procent, apoi lei). */
+    public static function topOffers(int $limit, ?Collection $exclude = null): Collection
     {
-        $manual = Coupon::active()->with('store')->where('top', true)->latest('updated_at')->take($limit)->get();
+        $exclude ??= collect();
+        $manual = Coupon::active()->with('store')->where('top', true)->whereNotIn('id', $exclude)->latest('updated_at')->take($limit)->get();
         if ($manual->count() >= $limit) {
             return $manual;
         }
-        $popular = DB::table('clicks')->where('object_type', 1)->whereDate('date', '>=', Day::today()->subDays(30)->toDateString())
-            ->groupBy('object_id')->orderByRaw('SUM(count) DESC')->limit(60)->pluck('object_id');
-        $more = Coupon::active()->with('store')->whereIn('id', $popular)->whereNotIn('id', $manual->pluck('id'))->take($limit - $manual->count())->get();
+        $more = Coupon::active()->with('store')->whereNotIn('id', $exclude->merge($manual->pluck('id')))
+            ->whereIn('value_type', ['procent', 'lei'])->where('value', '>', 0)
+            ->orderByRaw("CASE WHEN value_type = 'procent' THEN 0 ELSE 1 END")->orderByDesc('value')
+            ->take($limit - $manual->count())->get();
 
         return $manual->concat($more);
     }
@@ -147,7 +150,18 @@ final class Catalog
         return self::storesWithOffers()->whereIn('id', $ids)->sortByDesc(fn ($s) => self::count($s))->take($limit)->values();
     }
 
-    /** Voturile (da/nu) însumate pentru o listă de cupoane. @return array<int, array{yes:int,no:int,total:int,rate:?int}> */
+    /** De câte ori a fost folosit fiecare cupon (click-uri pe „Arată codul” / „Vezi oferta”, fără roboți). @return array<int,int> */
+    public static function uses(Collection $ids): array
+    {
+        if ($ids->isEmpty()) {
+            return [];
+        }
+
+        return DB::table('clicks')->where('object_type', 1)->whereIn('object_id', $ids)
+            ->selectRaw('object_id, SUM(count) c')->groupBy('object_id')->pluck('c', 'object_id')->map(fn ($c) => (int) $c)->all();
+    }
+
+    /** Voturile (da/nu) și folosirile, pentru o listă de cupoane. @return array<int, array{yes:int,no:int,total:int,rate:?int,uses?:int}> */
     public static function votes(Collection $ids): array
     {
         if ($ids->isEmpty()) {
@@ -158,6 +172,10 @@ final class Catalog
         foreach (DB::table('votes')->whereIn('coupon_id', $ids)->selectRaw('coupon_id, SUM(yes) y, SUM(no) n')->groupBy('coupon_id')->get() as $r) {
             $t = (int) $r->y + (int) $r->n;
             $out[$r->coupon_id] = ['yes' => (int) $r->y, 'no' => (int) $r->n, 'total' => $t, 'rate' => $t >= $min ? (int) round($r->y / $t * 100) : null];
+        }
+        // „Folosit de X ori” vine împreună cu voturile (aceleași pagini, o singură trecere prin date).
+        foreach (self::uses($ids) as $id => $n) {
+            $out[$id] = ($out[$id] ?? ['yes' => 0, 'no' => 0, 'total' => 0, 'rate' => null]) + ['uses' => $n];
         }
 
         return $out;

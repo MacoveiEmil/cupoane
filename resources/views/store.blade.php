@@ -32,7 +32,13 @@
                 @endif
             </div>
         @endif
+        <p class="trust"><svg width="14" height="14"><use href="#i-check"/></svg><a href="{{ url('/cum-verificam-codurile') }}">Cum verificăm codurile</a></p>
     </section>
+
+    {{-- Text propriu al magazinului, imediat sub oferte (câmpul „Text sub oferte” din fișa magazinului). --}}
+    @if (trim((string) $store->offers_text) !== '')
+        <section class="sec prose store__text">{!! $store->offers_text !!}</section>
+    @endif
 
     @if ($deals->isNotEmpty())
         <section class="sec" aria-labelledby="s-deals">
@@ -41,12 +47,8 @@
         </section>
     @endif
 
-    @if ($rows = $store->infoRows())
-        <section class="sec" aria-labelledby="s-info">
-            <h2 id="s-info">Informații utile</h2>
-            <dl class="info">@foreach ($rows as [$label, $value])<div><dt>{{ $label }}</dt><dd>{{ $value }}</dd></div>@endforeach</dl>
-        </section>
-    @endif
+    {{-- Întrebările proprii ale magazinului: sub oferte, deasupra descrierii. Fără întrebări completate, secțiunea nu apare. --}}
+    @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
 
     @if (trim(strip_tags((string) $store->description)) !== '')
         <section class="sec box prose" aria-labelledby="s-about">
@@ -56,9 +58,14 @@
     @endif
 
     @include('partials.guide', ['b' => $guides['howto'], 'id' => 's-howto'])
-    @include('partials.guide', ['b' => $guides['method'], 'id' => 's-method'])
     @include('partials.guide', ['b' => $guides['tips'], 'id' => 's-tips'])
-    @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
+
+    @if ($rows = $store->infoRows())
+        <section class="sec" aria-labelledby="s-info">
+            <h2 id="s-info">Informații utile</h2>
+            <dl class="info">@foreach ($rows as [$label, $value])<div><dt>{{ $label }}</dt><dd>{{ $value }}</dd></div>@endforeach</dl>
+        </section>
+    @endif
 
     @if ($coupons->isNotEmpty() && $similar->isNotEmpty())
         <section class="sec" aria-labelledby="s-sim">

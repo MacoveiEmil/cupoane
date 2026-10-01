@@ -36,14 +36,25 @@ docker compose exec app php artisan storage:link
 |---|---|
 | **Pe scurt** (prima pagină) | Oferte active, ciorne de verificat, oferte de reverificat, click-uri pe 7 zile, oferte care expiră curând |
 | **Conținut → Cupoane** | Taburi: *Toate / Active pe site / Ciorne / De reverificat / Expiră în 7 zile*. Butonul **„Verificat azi”** publică oferta și îi pune data verificării. Ofertele importate apar pe site cu „Adăugat pe …” până le verifici; „Verificat pe …” apare doar după „Verificat azi”. Selectezi mai multe → „Verificat azi și publică” sau „Mută în coș”. |
-| **Conținut → Magazine** | Nume, adresă, link de afiliere, logo (se convertește automat în WebP), categorii, **„Ordine pe homepage”** (1, 2, 3 = cardurile mari), texte „Despre”, informații utile, întrebări frecvente |
+| **Conținut → Magazine** | Nume, adresă, link de afiliere, logo (PNG/JPG/WebP, convertit automat în WebP), categorii, **„Ordine pe homepage”** (ordinea în „Magazine populare”), bifa „Indexează pagina și fără oferte”. **Conținut unic al paginii**: *Text sub oferte*, *Despre magazin*, *Cum folosești codurile* (pași), *Cum economisești* (sfaturi), **Întrebări frecvente** (3–5, specifice magazinului). Ce rămâne gol nu apare pe site: nu există texte generale repetate pe toate magazinele. |
 | **Conținut → Deal-uri** | **„Adaugă deal rapid”**: lipești URL-ul produsului, alegi magazinul → deeplink 2Performant generat automat; completezi prețuri și imagine |
 | **Organizare → Categorii / Etichete** | Categorii pe 2 niveluri; etichetele tematice (`/oferte/transport-gratuit` etc.) |
 | **Site → Pagini** | Despre noi, Contact, Termeni… (editor de text; titlurile H2 devin cuprins); bifezi ce apare în footer |
-| **Site → Setări și texte** | **Texte site**: titlul mare de pe homepage, subtitlul, textul SEO, textul din footer, mențiunea de afiliere. **Texte pagini**: blocurile de pe paginile de magazin / categorie și întrebările frecvente. **Reguli**: zile până la reverificare, pragul de voturi, creare automată de magazine. **2Performant**: datele de acces (criptate) |
+| **Site → Setări și texte** | **Texte site**: titlul mare de pe homepage (H1), paragraful de sub el, textul SEO, textul din footer, mențiunea de afiliere. **Texte pagini**: H1-ul paginilor de magazin / categorie și **întrebările frecvente de pe homepage** (singurul FAQ general; linkuri cu `[text](/adresa)`). **Reguli**: zile până la reverificare, pragul de voturi, creare automată de magazine. **2Performant**: datele de acces (criptate) |
 | **Site → Import din rețele** | „Importă acum” cu progres live; programele neasociate cu un magazin |
 
 Orice salvare în admin golește automat cache-ul de pagini, deci modificarea apare imediat pe site.
+
+### Conținutul magazinelor completat în lot (de tine sau de un AI)
+
+```bash
+php artisan cupons:content export storage/app/continut.json --empty   # magazinele fără conținut propriu
+# completezi fișierul (manual sau îl dai unui AI), apoi:
+php artisan cupons:content import storage/app/continut.json --dry-run # doar verifică
+php artisan cupons:content import storage/app/continut.json
+```
+
+Format: `{"answear-ro": {"offers_text": "<p>…</p>", "description": "<p>…</p>", "faq": [{"q": "…", "a": "…"}], "howto": [{"t": "…", "p": "…"}], "tips": [{"t": "…", "p": "…"}]}}`. Se actualizează doar cheile prezente; HTML-ul e curățat la import (doar paragrafe, liste, bold, linkuri). Cheile cu „_” din export (nume, site, număr de oferte, categorii) sunt doar context pentru cine scrie textele. Regula: întrebări și texte **diferite** pentru fiecare magazin.
 
 ## 3. Instalare pe cPanel
 

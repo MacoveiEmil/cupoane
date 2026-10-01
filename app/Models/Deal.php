@@ -69,6 +69,6 @@ class Deal extends Model
 
     public function imageUrl(): ?string
     {
-        return $this->image_path ? Storage::disk('public')->url($this->image_path) : null;
+        return $this->image_path ? '/storage/'.ltrim($this->image_path, '/') : null;
     }
 }

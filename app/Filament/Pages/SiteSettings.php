@@ -56,23 +56,18 @@ class SiteSettings extends Page
                 Tab::make('Texte site')->icon(Heroicon::OutlinedPencilSquare)->schema([
                     TextInput::make('hero_title')->label('Titlul mare de pe homepage (H1)')->required()->maxLength(90)
                         ->helperText('Păstrează formula „vouchere, reduceri și cupoane” pentru SEO.'),
-                    Textarea::make('hero_subtitle')->label('Subtitlu homepage')->rows(2)->maxLength(220),
+                    Textarea::make('hero_subtitle')->label('Paragraf sub H1 (homepage)')->rows(3)->maxLength(320)
+                        ->helperText('Apare imediat sub titlu. 1–2 fraze naturale cu cuvintele cheie: cod reducere, voucher, cupon, magazine online.'),
                     RichEditor::make('home_seo_text')->label('Text SEO de la finalul homepage-ului')
                         ->toolbarButtons(['bold', 'italic', 'link', 'h2', 'h3', 'bulletList', 'undo', 'redo']),
                     Textarea::make('footer_about')->label('Text „Despre” din footer')->rows(2)->maxLength(300),
                     Textarea::make('affiliate_note')->label('Mențiunea de afiliere (footer)')->rows(2)->maxLength(300),
                 ]),
                 Tab::make('Texte pagini')->icon(Heroicon::OutlinedDocumentText)->schema([
-                    Section::make('Cum se scriu blocurile')->description('Primul rând = titlul secțiunii (H2). Apoi câte un rând „Subtitlu | text” (subtitlul devine H3; la întrebări frecvente: „Întrebare | Răspuns”). Variabile: {magazin}, {categorie}, {data}. Un bloc gol nu se afișează.')->schema([
-                        TextInput::make('store_h1')->label('H1 pagină magazin')->maxLength(120)->helperText('Ex.: Coduri reducere {magazin} actualizate pe {data}'),
-                        Textarea::make('store_howto')->label('Magazin: cum folosești codurile')->rows(5),
-                        Textarea::make('store_method')->label('Magazin: cum ajunge un cod pe pagină')->rows(6),
-                        Textarea::make('store_tips')->label('Magazin: cum economisești')->rows(5),
-                        Textarea::make('store_faq')->label('Magazin: întrebări frecvente (dacă magazinul nu are întrebări proprii)')->rows(5),
-                        TextInput::make('category_h1')->label('H1 pagină categorie')->maxLength(120)->helperText('Ex.: Coduri reducere {categorie}'),
-                        Textarea::make('category_faq')->label('Categorie: întrebări frecvente')->rows(4),
-                        Textarea::make('listing_faq')->label('Magazine A–Z, Categorii, Top oferte: întrebări frecvente')->rows(5),
-                    ]),
+                    TextInput::make('store_h1')->label('H1 pagină magazin')->maxLength(120)->helperText('Variabile: {magazin}, {data}. Ex.: Coduri reducere {magazin} actualizate pe {data}'),
+                    TextInput::make('category_h1')->label('H1 pagină categorie')->maxLength(120)->helperText('Variabilă: {categorie}. Ex.: Coduri reducere {categorie}'),
+                    Textarea::make('home_faq')->label('Întrebări frecvente — homepage')->rows(12)
+                        ->helperText('Singurul FAQ general de pe site (apare doar pe homepage, și în schema FAQPage). Primul rând = titlul secțiunii; apoi câte un rând „Întrebare | Răspuns” (40–100 de cuvinte). Linkuri: [text](/adresa). Textele pentru fiecare magazin (FAQ, pași, sfaturi) se completează în fișa magazinului — unice, nu generale.'),
                 ]),
                 Tab::make('Reguli')->icon(Heroicon::OutlinedAdjustmentsHorizontal)->schema([
                     TextInput::make('recheck_days')->label('Reverificare oferte fără expirare (zile)')->numeric()->minValue(7)->maxValue(365)->required()

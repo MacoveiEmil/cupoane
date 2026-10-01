@@ -25,8 +25,6 @@
         </section>
     @endif
 
-    @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
-
     @if ($coupons->currentPage() === 1 && $category->description)
         <section class="sec prose seo"><p>{{ $category->description }}</p></section>
     @endif

@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         $pages = [
             'despre-noi' => 'Despre noi',
             'cum-functioneaza' => 'Cum funcționează',
-            'metodologie' => 'Metodologie',
+            'cum-verificam-codurile' => 'Cum verificăm codurile',
             'transparenta-si-afiliere' => 'Transparență și afiliere',
             'calendar-reduceri' => 'Calendar reduceri',
             'contact' => 'Contact',
@@ -32,7 +32,8 @@ class DatabaseSeeder extends Seeder
         ];
         $i = 0;
         foreach ($pages as $slug => $title) {
-            Page::firstOrCreate(['slug' => $slug], ['title' => $title, 'body' => '', 'sort' => $i++]);
+            $body = $slug === 'cum-verificam-codurile' ? (string) file_get_contents(resource_path('content/cum-verificam-codurile.html')) : '';
+            Page::firstOrCreate(['slug' => $slug], ['title' => $title, 'body' => $body, 'sort' => $i++]);
         }
 
         User::firstOrCreate(

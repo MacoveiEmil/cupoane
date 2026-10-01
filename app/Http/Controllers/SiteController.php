@@ -21,17 +21,26 @@ class SiteController extends Controller
 
     public function home()
     {
-        $top = Catalog::topOffers(8);
-        $exclusive = Catalog::exclusive(6, $top->pluck('id'));
-        $recent = Catalog::recent(8, $top->pluck('id')->merge($exclusive->pluck('id')));
+        // Ordinea paginii: întâi prospețimea (cele mai noi), apoi cele mai mari reduceri, apoi magazinele.
+        $recent = Catalog::recent(4, collect());
+        $top = Catalog::topOffers(6, $recent->pluck('id'));
+        if ($top->isEmpty()) {
+            $top = Catalog::topOffers(6); // inventar mic: mai bine o repetare decât o secțiune lipsă
+        }
+        $exclusive = Catalog::exclusive(6, $recent->pluck('id')->merge($top->pluck('id')));
         $counts = Catalog::storeCounts();
+        $faqBlock = Settings::block('home_faq');
+        $faq = Seo::faqHtml(self::faqItems($faqBlock));
 
         return view('home', [
             'seo' => new Seo(
                 title: Seo::site().' — Vouchere, reduceri și cupoane verificate zilnic',
                 description: 'Vouchere, reduceri și cupoane verificate pentru magazinele online din România. Coduri actualizate zilnic, fără oferte expirate.',
+                faq: $faq,
             ),
-            'popular' => Catalog::popular(3),
+            'faq' => $faq,
+            'faqTitle' => $faqBlock['title'] ?? 'Întrebări frecvente',
+            'popular' => Catalog::popular(8),
             'top' => $top,
             'exclusive' => $exclusive,
             'recent' => $recent,
@@ -48,10 +57,8 @@ class SiteController extends Controller
         $count = $coupons->count();
         $ll = Day::monthYear();
         $vars = ['magazin' => $store->name, 'data' => Day::long($store->updated_on ?? Day::today())];
-        $faqBlock = Settings::block('store_faq', $vars);
-        // Întrebările proprii ale magazinului (din admin) au prioritate; altfel cele generale din Texte pagini.
-        $faq = collect($store->faq ?? [])->filter(fn ($r) => ! empty($r['q']) && ! empty($r['a']))->map(fn ($r) => [$r['q'], $r['a']])->values()->all()
-            ?: self::faqItems($faqBlock);
+        // Doar conținut propriu al magazinului (fără texte generale repetate pe toate paginile); gol = secțiunea nu apare.
+        $faq = Seo::faqHtml($store->pairs('faq', 'q', 'a'));
 
         return view('store', [
             'seo' => new Seo(
@@ -71,9 +78,12 @@ class SiteController extends Controller
             'similar' => ($sim = Catalog::similar($store, 6))->isNotEmpty() || $count > 0 ? $sim : Catalog::popular(4)->where('id', '!=', $store->id)->values(),
             'votes' => Catalog::votes($coupons->pluck('id')),
             'h1' => Settings::text('store_h1', $vars),
-            'guides' => ['howto' => Settings::block('store_howto', $vars), 'method' => Settings::block('store_method', $vars), 'tips' => Settings::block('store_tips', $vars)],
+            'guides' => [
+                'howto' => ($h = $store->pairs('howto', 't', 'p')) ? ['title' => "Cum folosești codurile de reducere {$store->name}?", 'items' => $h] : null,
+                'tips' => ($t = $store->pairs('tips', 't', 'p')) ? ['title' => "Cum economisești la {$store->name}", 'items' => $t] : null,
+            ],
             'faq' => $faq,
-            'faqTitle' => $faqBlock['title'] ?? 'Întrebări frecvente despre codurile '.$store->name,
+            'faqTitle' => 'Întrebări frecvente despre codurile '.$store->name,
         ]);
     }
 
@@ -81,14 +91,6 @@ class SiteController extends Controller
     private static function faqItems(?array $block): array
     {
         return collect($block['items'] ?? [])->filter(fn ($r) => $r[0] !== null)->values()->all();
-    }
-
-    /** FAQ-ul general al paginilor de listă (magazine, categorii, top), pentru pagină și schema FAQPage. */
-    private static function listingFaq(): array
-    {
-        $b = Settings::block('listing_faq');
-
-        return ['faq' => self::faqItems($b), 'faqTitle' => $b['title'] ?? 'Întrebări frecvente'];
     }
 
     public function stores()
@@ -99,20 +101,16 @@ class SiteController extends Controller
             return ctype_alpha($l) ? $l : '0–9';
         })->sortKeys();
 
-        $faq = self::listingFaq();
-
-        return view('stores', $faq + [
-            'seo' => new Seo(title: 'Magazine A–Z — vouchere, reduceri și cupoane | '.Seo::site(), description: 'Toate magazinele online cu vouchere, reduceri și cupoane active, în ordine alfabetică.', breadcrumbs: [['Magazine', route('stores')]], faq: $faq['faq']),
+        return view('stores', [
+            'seo' => new Seo(title: 'Magazine A–Z — vouchere, reduceri și cupoane | '.Seo::site(), description: 'Toate magazinele online cu vouchere, reduceri și cupoane active, în ordine alfabetică.', breadcrumbs: [['Magazine', route('stores')]]),
             'groups' => $groups,
         ]);
     }
 
     public function categories()
     {
-        $faq = self::listingFaq();
-
-        return view('categories', $faq + [
-            'seo' => new Seo(title: 'Categorii — vouchere, reduceri și cupoane | '.Seo::site(), description: 'Vouchere, reduceri și cupoane pe categorii de magazine.', breadcrumbs: [['Categorii', route('categories')]], faq: $faq['faq']),
+        return view('categories', [
+            'seo' => new Seo(title: 'Categorii — vouchere, reduceri și cupoane | '.Seo::site(), description: 'Vouchere, reduceri și cupoane pe categorii de magazine.', breadcrumbs: [['Categorii', route('categories')]]),
             'tree' => Catalog::categoryTree(true),
         ]);
     }
@@ -127,20 +125,15 @@ class SiteController extends Controller
             $crumbs[] = [$category->parent->name, route('category', $category->parent)];
         }
         $crumbs[] = [$category->name, route('category', $category)];
-        $faqBlock = $page === 1 ? Settings::block('category_faq', ['categorie' => $category->name]) : null;
-        $faq = self::faqItems($faqBlock);
 
         return view('category', [
             'h1' => Settings::text('category_h1', ['categorie' => $category->name]),
-            'faq' => $faq,
-            'faqTitle' => $faqBlock['title'] ?? 'Întrebări frecvente',
             'seo' => new Seo(
                 title: "Vouchere, reduceri și cupoane {$category->name} — ".Day::monthYear().($page > 1 ? " — pagina {$page}" : ''),
                 description: "Vouchere, reduceri și cupoane {$category->name}: ".Seo::plural($coupons->total(), 'ofertă activă', 'oferte active').' verificate în '.Day::monthYear().'.',
                 canonical: $page > 1 ? $coupons->url($page) : route('category', $category),
                 noindex: $page > 1 || $coupons->total() < Seo::MIN_OFFERS_INDEX,
                 breadcrumbs: $crumbs,
-                faq: $faq,
             ),
             'category' => $category,
             'coupons' => $coupons,
@@ -189,11 +182,9 @@ class SiteController extends Controller
         $skip = $featured->pluck('id');
         [$top, $exclusive, $recent] = [$top->whereNotIn('id', $skip), $exclusive->whereNotIn('id', $skip), $recent->whereNotIn('id', $skip)];
 
-        $faq = self::listingFaq();
-
-        return view('top', $faq + [
+        return view('top', [
             'featured' => $featured,
-            'seo' => new Seo(title: 'Top oferte '.Day::monthYear().' — vouchere, reduceri și cupoane | '.Seo::site(), description: 'Cele mai bune vouchere, reduceri și cupoane active acum.', breadcrumbs: [['Top oferte', route('top')]], faq: $faq['faq']),
+            'seo' => new Seo(title: 'Top oferte '.Day::monthYear().' — vouchere, reduceri și cupoane | '.Seo::site(), description: 'Cele mai bune vouchere, reduceri și cupoane active acum.', breadcrumbs: [['Top oferte', route('top')]]),
             'top' => $top, 'exclusive' => $exclusive, 'recent' => $recent,
             'votes' => Catalog::votes($featured->concat($top)->concat($exclusive)->concat($recent)->pluck('id')),
         ]);

@@ -28,7 +28,7 @@ class Store extends Model
 
     protected function casts(): array
     {
-        return ['info' => 'array', 'faq' => 'array', 'updated_on' => 'date', 'force_index' => 'boolean'];
+        return ['info' => 'array', 'faq' => 'array', 'howto' => 'array', 'tips' => 'array', 'updated_on' => 'date', 'force_index' => 'boolean'];
     }
 
     protected static function booted(): void
@@ -73,7 +73,20 @@ class Store extends Model
      */
     public function indexable(int $offers): bool
     {
-        return $this->force_index || $offers > 0 || trim(strip_tags((string) $this->description)) !== '';
+        return $this->force_index || $offers > 0 || $this->hasOwnContent();
+    }
+
+    /** Liste de forma [{q,a}] / [{t,p}] din admin, fără rândurile incomplete. @return array<int, array{0:string,1:string}> */
+    public function pairs(string $field, string $a, string $b): array
+    {
+        return collect($this->{$field} ?? [])->filter(fn ($r) => trim((string) ($r[$a] ?? '')) !== '' && trim((string) ($r[$b] ?? '')) !== '')
+            ->map(fn ($r) => [trim($r[$a]), trim($r[$b])])->values()->all();
+    }
+
+    /** Pagina are conținut propriu (nu doar oferte)? */
+    public function hasOwnContent(): bool
+    {
+        return trim(strip_tags((string) $this->description)) !== '' || trim((string) $this->offers_text) !== '' || $this->pairs('faq', 'q', 'a') !== [];
     }
 
     public function activeCoupons(): HasMany
@@ -98,7 +111,8 @@ class Store extends Model
 
     public function logoUrl(): ?string
     {
-        return $this->logo_path ? Storage::disk('public')->url($this->logo_path) : null;
+        // Adresă relativă: merge pe orice domeniu (producție, tunel de preview) și respectă CSP-ul.
+        return $this->logo_path ? '/storage/'.ltrim($this->logo_path, '/') : null;
     }
 
     public function touchUpdated(): void

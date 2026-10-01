@@ -32,6 +32,21 @@ final class Seo
         return ! app()->isProduction();
     }
 
+    /**
+     * Răspunsurile FAQ: text simplu cu linkuri [text](/adresa) → HTML sigur (orice alt HTML e escapat).
+     * Aceeași listă alimentează pagina și schema FAQPage (fără desincronizări).
+     * @param  array<int, array{0:string,1:string}>  $items
+     */
+    public static function faqHtml(array $items): array
+    {
+        return array_map(fn ($r) => [$r[0], self::md($r[1])], $items);
+    }
+
+    public static function md(string $text): string
+    {
+        return trim((string) \Illuminate\Support\Str::inlineMarkdown($text, ['html_input' => 'escape', 'allow_unsafe_links' => false]));
+    }
+
     public static function site(): string
     {
         return (string) config('app.name');

@@ -18,7 +18,7 @@ final class Settings
         return [
             // Texte
             'hero_title' => 'Vouchere, reduceri și cupoane verificate',
-            'hero_subtitle' => 'Coduri de reducere pentru magazinele online din România, într-un singur loc. Copiezi codul, mergi în magazin, plătești mai puțin.',
+            'hero_subtitle' => 'Coduri de reducere, vouchere și cupoane pentru magazinele online din România, verificate și actualizate zilnic. Copiezi codul, îl aplici în coș și plătești mai puțin la haine, încălțăminte, cărți, electronice și multe altele.',
             'footer_about' => 'Vouchere, reduceri și cupoane pentru magazinele online din România. Ofertele expirate dispar automat.',
             'affiliate_note' => 'Unele linkuri de pe site sunt linkuri de afiliere: dacă faci o comandă prin ele, putem primi un comision, fără niciun cost în plus pentru tine.',
             'home_seo_text' => '<h2>Coduri de reducere verificate zilnic, pentru cumpărături mai ieftine</h2>'
@@ -26,34 +26,26 @@ final class Settings
                 .'<p>Strângem într-un singur loc vouchere, reduceri și cupoane de la magazinele online din România. Ofertele expirate dispar automat, așa că pe site găsești doar coduri valabile.</p>'
                 .'<h3>Cum folosești un cod de reducere</h3>'
                 .'<p>Apasă „Arată codul”, copiază-l și introdu-l în coșul magazinului, înainte de plată. Pentru ofertele fără cod, reducerea se aplică direct pe site-ul magazinului.</p>',
-            // Texte pagini: blocuri cu titlu (H2) pe primul rând, apoi „Subtitlu (H3) | text”, câte unul pe rând.
-            // Variabile: {magazin}, {categorie}, {data}. Un bloc gol nu se afișează.
+            // H1-uri cu variabile ({magazin}, {data}, {categorie}).
             'store_h1' => 'Coduri reducere {magazin} actualizate pe {data}',
-            'store_howto' => "Cum folosești codurile de reducere {magazin}?\n"
-                ."Alege un cod de reducere {magazin} din lista de mai sus | Uită-te la valoare, la condiții și la data de expirare, apoi apasă „Arată codul” sau „Vezi oferta”.\n"
-                ."Copiază codul promoțional {magazin} și accesează site-ul | Codul se copiază automat, iar site-ul {magazin} se deschide într-o filă nouă.\n"
-                .'Introdu codul de reducere {magazin} la checkout | Lipește codul în câmpul pentru voucher din coș, înainte de plată, și verifică dacă reducerea a fost aplicată.',
-            'store_method' => "Cum ajunge un cod {magazin} pe pagină?\n"
-                ."De unde vin codurile | Codurile vin direct de la {magazin}, prin rețeaua de afiliere 2Performant, sau sunt adăugate manual de echipa noastră.\n"
-                ."Cum le verificăm | Ofertele verificate de noi au pe card „Verificat pe” și data. Cele preluate automat apar cu „Adăugat pe”, până le verificăm. Ofertele fără dată de expirare sunt reverificate periodic.\n"
-                ."Cum calculăm rata de succes | După fiecare cod poți vota „A funcționat?”. Rata de succes apare când există suficiente voturi.\n"
-                .'Când le retragem | Ofertele expirate dispar automat de pe site, din aceeași zi.',
-            'store_tips' => "Cum economisești la {magazin}\n"
-                ."Folosește codul în coș înainte de plată | Majoritatea codurilor {magazin} se aplică în coș, înainte de finalizarea comenzii.\n"
-                ."Verifică pragul minim și produsele incluse | Unele coduri au o valoare minimă a comenzii sau se aplică doar la anumite produse. Detaliile sunt la „Condiții”.\n"
-                .'Combină codul cu reducerile din site | Pe lângă codurile de reducere, urmărește și ofertele fără cod de pe pagina {magazin}.',
-            'store_faq' => "Întrebări frecvente despre codurile {magazin}\n"
-                ."Cum folosesc un cod de reducere {magazin}? | Apasă „Arată codul”, copiază-l și introdu-l în coș, pe site-ul {magazin}, înainte de plată.\n"
-                ."De ce nu funcționează codul {magazin}? | Verifică data de expirare, valoarea minimă a comenzii și produsele incluse, la „Condiții”. Dacă tot nu merge, votează „Nu” ca să-i anunți și pe ceilalți.\n"
-                .'Cât de des sunt actualizate codurile {magazin}? | Ofertele sunt actualizate zilnic, iar cele expirate dispar automat.',
             'category_h1' => 'Coduri reducere {categorie}',
-            'category_faq' => "Întrebări frecvente\n"
-                ."Unde găsesc coduri de reducere pentru {categorie}? | Pe această pagină sunt toate ofertele active de la magazinele din categoria {categorie}, actualizate zilnic.\n"
-                .'Sunt valabile codurile de reducere {categorie}? | Da. Ofertele expirate dispar automat, iar fiecare card arată data ultimei verificări.',
-            'listing_faq' => "Întrebări frecvente\n"
-                ."Sunt gratuite codurile de reducere? | Da. Toate codurile și ofertele de pe site sunt gratuite.\n"
-                ."Cât de des sunt actualizate ofertele? | Zilnic. Ofertele expirate dispar automat, din aceeași zi.\n"
-                .'De ce unele oferte nu au cod? | Unele reduceri se aplică direct pe site-ul magazinului, fără cod. Apeși „Vezi oferta” și reducerea apare acolo.',
+            // FAQ-ul homepage-ului (singurul FAQ general de pe site): primul rând = titlul (H2),
+            // apoi „Întrebare | Răspuns”, câte unul pe rând. Linkuri: [text](/adresa).
+            'home_faq' => "Întrebări frecvente
+"
+                ."Cum verificați codurile de reducere? | Ofertele vin direct de la magazine, prin rețeaua de afiliere 2Performant, sau le adăugăm noi. Înainte să apară pe site, fiecare ofertă e citită de echipa noastră: valoare, condiții, dată de expirare. Pe card vezi „Verificat pe” cu data, când am testat-o, sau „Adăugat pe”, când a fost doar preluată. Ofertele fără dată de expirare le reverificăm periodic, iar cele expirate dispar automat. Toți pașii sunt descriși în [Cum verificăm codurile](/cum-verificam-codurile).
+"
+                ."De ce nu funcționează un cod? | Cele mai multe coduri au condiții: o valoare minimă a comenzii, doar anumite produse sau branduri, doar prima comandă sau doar în aplicația magazinului. Unele nu se cumulează cu produsele deja reduse. Deschide „Condiții” de pe card înainte să plasezi comanda și verifică data de expirare. Dacă tot nu merge, apasă „Nu” la „A funcționat?”, ca să-i avertizezi pe ceilalți și să-l reverificăm noi.
+"
+                ."Cât de des actualizați ofertele? | Zilnic. În fiecare dimineață preluăm ofertele noi de la magazinele partenere, iar la miezul nopții scoatem automat tot ce a expirat, așa că pe site nu rămân coduri moarte. Ofertele fără dată de expirare le reverificăm cel puțin o dată pe lună, iar data din titlul fiecărei pagini de magazin îți arată când a fost actualizată ultima dată.
+"
+                ."Cum câștigați bani? | Din comisioane de afiliere. Când intri pe un magazin printr-un link de pe site și plasezi o comandă, magazinul ne poate plăti un comision prin rețeaua de afiliere. Tu nu plătești nimic în plus: prețul și reducerea sunt aceleași. Comisionul nu decide ce oferte afișăm: publicăm ofertele active pe care le găsim și le scoatem pe cele expirate, indiferent cât câștigăm din ele.
+"
+                ."Codurile sunt gratuite? | Da, complet. Nu ai nevoie de cont, nu îți cerem adresa de email și nu există abonamente. Apeși „Arată codul”, codul se copiază automat, iar site-ul magazinului se deschide într-o filă nouă. Îl lipești în coș, înainte de plată. La ofertele fără cod, reducerea se aplică direct pe site-ul magazinului, după ce apeși „Vezi oferta”.
+"
+                ."Pot trimite un cod de reducere? | Da. Scrie-ne prin pagina de [Contact](/contact) și spune-ne magazinul, codul, valoarea reducerii, condițiile și până când e valabil. Îl verificăm înainte să-l publicăm, iar dacă funcționează îl adăugăm pe pagina magazinului cu data verificării. Nu publicăm coduri personale, generate pentru un singur cont, sau coduri obținute încălcând regulile magazinului.
+"
+                .'Cum aflu când apare un cod nou pentru un magazin? | Nu trimitem newslettere și nu avem notificări. Pagina fiecărui magazin e actualizată zilnic, iar data din titlu îți arată ultima actualizare. Cel mai simplu e să salvezi pagina magazinului preferat în favoritele browserului și să revii înainte de fiecare comandă. Codurile noi apar primele și în secțiunea „Cele mai noi vouchere” de pe prima pagină.',
             // Reguli
             'recheck_days' => 30,
             'vote_min' => 5,
@@ -68,8 +60,11 @@ final class Settings
 
     public static function all(): array
     {
-        return Cache::rememberForever('settings', function () {
-            $out = self::defaults();
+        // În cache stau doar valorile salvate din admin; valorile implicite din cod se adaugă la fiecare citire,
+        // ca o setare nouă (după un deploy) să apară imediat, fără golirea manuală a cache-ului.
+        $saved = Cache::rememberForever('settings', function () {
+            $out = [];
+            $defaults = self::defaults();
             foreach (Setting::all() as $row) {
                 $value = $row->value;
                 if (in_array($row->key, self::SECRET, true) && $value) {
@@ -79,7 +74,7 @@ final class Settings
                         $value = '';
                     }
                 }
-                $default = $out[$row->key] ?? null;
+                $default = $defaults[$row->key] ?? null;
                 $out[$row->key] = match (true) {
                     is_bool($default) => (bool) $value,
                     is_int($default) => (int) $value,
@@ -89,6 +84,8 @@ final class Settings
 
             return $out;
         });
+
+        return $saved + self::defaults();
     }
 
     public static function get(string $key, mixed $default = null): mixed

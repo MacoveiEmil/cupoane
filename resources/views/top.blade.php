@@ -11,7 +11,7 @@
         </section>
     @endif
 
-    @foreach ([['top', 'Cele mai accesate și recomandate', $top], ['exclusive', 'Coduri exclusive', $exclusive], ['recente', 'Adăugate recent', $recent]] as [$id, $title, $list])
+    @foreach ([['top', 'Cele mai mari reduceri', $top], ['exclusive', 'Coduri exclusive', $exclusive], ['recente', 'Adăugate recent', $recent]] as [$id, $title, $list])
         @if ($list->isNotEmpty())
             <section class="sec" aria-labelledby="{{ $id }}">
                 <div class="sec__head"><h2 id="{{ $id }}">{{ $title }}</h2></div>
@@ -22,6 +22,5 @@
     @if ($featured->isEmpty())
         <p class="empty">Momentan nu sunt oferte active.</p>
     @endif
-    @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
 </div>
 @endsection

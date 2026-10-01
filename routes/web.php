@@ -37,6 +37,9 @@ Route::withoutMiddleware($stateless)->group(function () {
         Route::get('/magazine.json', [SiteController::class, 'searchIndex'])->name('search.index');
         Route::get('/sitemap.xml', [SitemapController::class, 'sitemap']);
         Route::get('/robots.txt', [SitemapController::class, 'robots']);
+        // Adrese vechi / interzise: 301 (nu există pagină separată de întrebări frecvente; FAQ-ul e pe homepage).
+        Route::permanentRedirect('/metodologie', '/cum-verificam-codurile');
+        Route::permanentRedirect('/intrebari-frecvente', '/#faq');
         // Paginile statice (Despre noi, Contact…) — ultima rută, doar pentru slug-urile din tabela pages.
         Route::get('/{page:slug}', [SiteController::class, 'page'])->where('page', '[a-z0-9\-]+')->name('page');
     });

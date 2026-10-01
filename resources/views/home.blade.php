@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-{{-- Sus doar titlul și căutarea: ofertele încep imediat dedesubt. --}}
+{{-- Sus: titlul, un paragraf scurt (editabil din admin) și căutarea; ofertele încep imediat dedesubt. --}}
 <section class="intro">
     <div class="wrap">
         <div class="intro__in">
@@ -9,6 +9,7 @@
                 <h1 class="intro__title">{{ $site['hero_title'] }}</h1>
                 {{-- Cifrele apar doar de la 100 de oferte; sub prag ar transmite că site-ul e mic. --}}
                 <p class="intro__meta">@if ($stats['offers'] >= 100)<b>{{ \App\Support\Seo::plural($stats['offers'], 'ofertă activă', 'oferte active') }}</b> la <b>{{ \App\Support\Seo::plural($stats['stores'], 'magazin', 'magazine') }}</b> · actualizat azi, {{ \App\Support\Day::dayMonth() }}@else Actualizat azi, {{ \App\Support\Day::dayMonth() }}@endif</p>
+                @if (trim($site['hero_subtitle']) !== '')<p class="intro__text">{{ $site['hero_subtitle'] }}</p>@endif
             </div>
             @include('partials.search', ['big' => true])
         </div>
@@ -16,6 +17,16 @@
 </section>
 
 <div class="wrap">
+    {{-- 1. Prospețimea: cine caută reduceri vrea întâi codurile noi. 2. Cele mai mari reduceri. 3. Magazinele. --}}
+    @foreach ([['s-new', 'Cele mai noi vouchere', $recent, route('top').'#recente'], ['s-top', 'Top coduri și oferte', $top, route('top')]] as [$id, $title, $list, $more])
+        @if ($list->isNotEmpty())
+            <section class="sec" aria-labelledby="{{ $id }}">
+                <div class="sec__head"><h2 id="{{ $id }}">{{ $title }}</h2><a class="more" href="{{ $more }}">Vezi toate <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
+                <div class="cards">@foreach ($list as $c) @include('partials.coupon', ['c' => $c]) @endforeach</div>
+            </section>
+        @endif
+    @endforeach
+
     @if ($popular->isNotEmpty())
         <section class="sec" aria-labelledby="s-pop">
             <div class="sec__head"><h2 id="s-pop">Magazine populare</h2><a class="more" href="{{ route('stores') }}">Toate magazinele <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
@@ -23,17 +34,12 @@
         </section>
     @endif
 
-    @php($lists = [['s-top', 'Top coduri și oferte', $top, route('top')], ['s-ex', 'Coduri exclusive', $exclusive, route('top').'#exclusive'], ['s-new', 'Adăugate recent', $recent, route('top').'#recente']])
-
-    @foreach ($lists as $i => [$id, $title, $list, $more])
-        @if ($list->isNotEmpty())
-            <section class="sec" aria-labelledby="{{ $id }}">
-                <div class="sec__head"><h2 id="{{ $id }}">{{ $title }}</h2><a class="more" href="{{ $more }}">Vezi toate <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
-                <div class="cards">@foreach ($list as $c) @include('partials.coupon', ['c' => $c]) @endforeach</div>
-            </section>
-        @endif
-
-    @endforeach
+    @if ($exclusive->isNotEmpty())
+        <section class="sec" aria-labelledby="s-ex">
+            <div class="sec__head"><h2 id="s-ex">Coduri exclusive</h2><a class="more" href="{{ route('top') }}#exclusive">Vezi toate <svg width="16" height="16"><use href="#i-arrow"/></svg></a></div>
+            <div class="cards">@foreach ($exclusive as $c) @include('partials.coupon', ['c' => $c]) @endforeach</div>
+        </section>
+    @endif
 
     @if ($deals->isNotEmpty())
         <section class="sec" aria-labelledby="s-deals">
@@ -56,5 +62,7 @@
     @if (trim(strip_tags($site['home_seo_text'])) !== '')
         <section class="sec prose seo">{!! $site['home_seo_text'] !!}</section>
     @endif
+
+    @include('partials.faq', ['faq' => $faq, 'title' => $faqTitle])
 </div>
 @endsection
