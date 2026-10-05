@@ -44,31 +44,64 @@ final class TwoPerformant implements NetworkConnector
     {
         $page = max(1, (int) ($cursor ?? 1));
         $data = $this->get('/affiliate/programs', ['page' => $page, 'perpage' => self::PER_PAGE, 'filter' => ['relation' => 'accepted']]);
+        $items = array_map(fn ($p) => $this->program($p, 'accepted'), array_filter((array) ($data['programs'] ?? []), fn ($p) => ! empty($p['id'])));
+
+        return [array_values($items), $this->nextPage($data, $page, count($items))];
+    }
+
+    /** Cursor „relatie:pagina”: întâi cererile în așteptare, apoi programele neaplicate. Doar România, fără categoria Adult. */
+    public function directory(?string $cursor): array
+    {
+        [$relation, $page] = explode(':', $cursor ?? 'pending:1') + [1 => 1];
+        $page = max(1, (int) $page);
+        $data = $this->get('/affiliate/programs', ['page' => $page, 'perpage' => self::PER_PAGE, 'filter' => ['relation' => $relation, 'country' => 'Romania']]);
+        $raw = array_filter((array) ($data['programs'] ?? []), fn ($p) => ! empty($p['id']));
         $items = [];
-        foreach ((array) ($data['programs'] ?? []) as $p) {
-            if (empty($p['id'])) {
-                continue;
+        foreach ($raw as $p) {
+            if (! in_array(trim((string) ($p['category']['name'] ?? '')), Categories::SKIP, true)) {
+                $items[] = $this->program($p, $relation);
             }
-            $url = (string) ($p['main_url'] ?? '') ?: (! empty($p['base_url']) ? 'https://'.ltrim($p['base_url'], '/') : '');
-            $items[] = new ProgramData(
-                network: $this->id(),
-                id: (string) $p['id'],
-                name: trim((string) ($p['name'] ?? '')),
-                url: $url,
-                uniqueCode: (string) ($p['unique_code'] ?? ''),
-                category: trim((string) ($p['category']['name'] ?? '')),
-                logo: (string) ($p['logo_path'] ?? ''),
-                accepted: ($p['status'] ?? 'active') === 'active',
-            );
+        }
+        $next = $this->nextPage($data, $page, count($raw));
+        if ($next === null && $relation === 'pending') {
+            return [$items, 'not_applied:1'];
         }
 
-        return [$items, $this->nextPage($data, $page, count($items))];
+        return [$items, $next === null ? null : $relation.':'.$next];
+    }
+
+    private function program(array $p, string $relation): ProgramData
+    {
+        $url = (string) ($p['main_url'] ?? '') ?: (! empty($p['base_url']) ? 'https://'.ltrim($p['base_url'], '/') : '');
+        // Sursa de trafic „Coupons/Vouchers” (id 17): usage = yes și activă → magazinul acceptă site-uri ca al nostru.
+        $source = collect((array) ($p['advertiser_traffic_sources'] ?? []))
+            ->first(fn ($s) => is_array($s) && ((int) ($s['traffic_source_id'] ?? 0) === 17 || stripos((string) ($s['name'] ?? ''), 'coupon') !== false));
+        $allows = match (true) {
+            is_array($source) => ($source['usage'] ?? '') === 'yes' && ($source['status'] ?? 'active') !== 'deleted',
+            isset($p['most_used_traffic_sources']['Coupons/Vouchers']) => $p['most_used_traffic_sources']['Coupons/Vouchers'] === 'yes',
+            default => null,
+        };
+
+        return new ProgramData(
+            network: $this->id(),
+            id: (string) $p['id'],
+            name: trim((string) ($p['name'] ?? '')),
+            url: $url,
+            uniqueCode: (string) ($p['unique_code'] ?? ''),
+            category: trim((string) ($p['category']['name'] ?? '')),
+            logo: (string) ($p['logo_path'] ?? ''),
+            accepted: $relation === 'accepted' ? ($p['status'] ?? 'active') === 'active' : false,
+            relation: $relation,
+            allowsCoupons: $allows,
+        );
     }
 
     public function offers(?string $cursor): array
     {
         $page = max(1, (int) ($cursor ?? 1));
-        $data = $this->get('/affiliate/advertiser_promotions', ['page' => $page, 'perpage' => self::PER_PAGE, 'filter' => ['affrequest_status' => 'accepted']]);
+        // Toate promoțiile din rețea, inclusiv de la magazinele la care nu suntem (încă) acceptați:
+        // pentru acestea linkul duce direct la magazin, iar la acceptare trece automat pe afiliere.
+        $data = $this->get('/affiliate/advertiser_promotions', ['page' => $page, 'perpage' => self::PER_PAGE]);
         $aff = $this->login()['aff_code'];
         $items = [];
         foreach ((array) ($data['advertiser_promotions'] ?? []) as $p) {
@@ -76,7 +109,8 @@ final class TwoPerformant implements NetworkConnector
                 continue;
             }
             $programId = (string) ($p['program']['id'] ?? '');
-            $unique = (string) Program::where('network', $this->id())->where('program_id', $programId)->value('unique_code');
+            $program = Program::where('network', $this->id())->where('program_id', $programId)->first(['unique_code', 'accepted']);
+            $unique = $program && $program->accepted ? (string) $program->unique_code : '';
             $landing = (string) ($p['landing_page_link'] ?? '');
             $terms = trim((string) ($p['customer_description'] ?? ''));
             [$value, $type, $upto] = OfferData::parseValue(($p['name'] ?? '').' '.$terms);
@@ -90,7 +124,7 @@ final class TwoPerformant implements NetworkConnector
                 valueType: $type,
                 upto: $upto,
                 terms: $terms,
-                link: ($landing !== '' && $unique !== '' && $aff !== '') ? $this->quicklink($landing, $unique, $aff) : '',
+                link: ($landing !== '' && $unique !== '' && $aff !== '') ? $this->quicklink($landing, $unique, $aff) : $landing,
                 start: OfferData::localDate($p['promotion_start'] ?? ''),
                 end: OfferData::localDate($p['promotion_end'] ?? ''),
             );

@@ -29,6 +29,7 @@ class ImportCommand extends Command
         $this->line($connector->label().': pornesc importul…');
         $s = Importer::run($network, fn ($s) => $this->line('  faza: '.$s['phase']));
         $st = $s['stats'];
+        $this->line(sprintf('Magazine-placeholder noi: %d (ascunse până au oferte).', $s['stats']['placeholders'] ?? 0));
         $this->line(sprintf('Programe: %d (%d magazine noi). Oferte: %d noi, %d actualizate, %d neschimbate, %d neasociate, %d expirate, %d ignorate.',
             $st['programs'], $st['stores_created'], $st['created'], $st['updated'], $st['unchanged'], $st['unmapped'], $st['expired'], $st['skipped']));
 

@@ -17,6 +17,13 @@ interface NetworkConnector
     /** @return array{0: ProgramData[], 1: ?string} [programe, cursor pagina următoare] */
     public function programs(?string $cursor): array;
 
+    /**
+     * Programele din România la care NU suntem acceptați încă (în așteptare / neaplicate): devin magazine-placeholder,
+     * ascunse de pe site până primesc o ofertă publicată sau text propriu.
+     * @return array{0: ProgramData[], 1: ?string}
+     */
+    public function directory(?string $cursor): array;
+
     /** @return array{0: OfferData[], 1: ?string} [oferte, cursor pagina următoare] */
     public function offers(?string $cursor): array;
 

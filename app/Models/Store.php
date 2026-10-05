@@ -7,6 +7,7 @@ use App\Support\PageCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -60,6 +61,12 @@ class Store extends Model
     public function deals(): HasMany
     {
         return $this->hasMany(Deal::class);
+    }
+
+    /** Programul de afiliere legat (starea: accepted / pending / not_applied). */
+    public function program(): HasOne
+    {
+        return $this->hasOne(Program::class);
     }
 
     public function categories(): BelongsToMany

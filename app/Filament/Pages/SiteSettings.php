@@ -74,6 +74,8 @@ class SiteSettings extends Page
                         ->helperText('După acest interval fără verificare, oferta trece în ciornă, la „De reverificat”.'),
                     TextInput::make('vote_min')->label('Rata „A funcționat” apare de la (voturi)')->numeric()->minValue(1)->maxValue(100)->required(),
                     Toggle::make('auto_stores')->label('La import, creează automat magazine pentru programele acceptate'),
+                    Toggle::make('placeholder_stores')->label('Creează și magazine-placeholder pentru programele la care nu suntem încă acceptați (România)')
+                        ->helperText('Rămân ascunse de pe site și din Google până au o ofertă publicată sau text propriu; linkurile duc direct la magazin până la acceptare, apoi trec automat pe afiliere.'),
                 ]),
                 Tab::make('2Performant')->icon(Heroicon::OutlinedLink)->schema([
                     Toggle::make('tp_enabled')->label('Importă din 2Performant'),

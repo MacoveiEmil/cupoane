@@ -15,7 +15,8 @@
                         <span class="text-sm text-gray-600 dark:text-gray-300">
                             @switch($s['phase'])
                                 @case('idle') Nu a rulat încă. @break
-                                @case('programs') În curs: programe… @break
+                                @case('programs') În curs: programe acceptate… @break
+                                @case('directory') În curs: magazine-placeholder (programe neaplicate)… @break
                                 @case('offers') În curs: oferte… @break
                                 @case('logos') În curs: logo-uri… @break
                                 @default Terminat {{ $s['finished'] ? \Carbon\Carbon::parse($s['finished'])->timezone(config('app.timezone'))->format('d.m.Y H:i') : '' }}.
@@ -28,7 +29,7 @@
                     @if ($s['error'])
                         <p class="mt-3 text-sm text-danger-600">{{ $s['error'] }} — apasă din nou „Importă acum” după ce rezolvi problema.</p>
                     @endif
-                    <p class="mt-3 text-xs text-gray-500">Ofertele noi intră ca ciorne (Cupoane → Ciorne). Cele existente își actualizează doar codul, datele și linkul; cele șterse nu revin.</p>
+                    <p class="mt-3 text-xs text-gray-500">Ofertele noi intră ca ciorne (Cupoane → Ciorne), inclusiv cele de la magazinele la care nu suntem încă acceptați (link direct spre magazin până la acceptare, apoi automat link de afiliere). Cele existente își actualizează doar codul, datele și linkul; cele șterse nu revin.</p>
                 @endif
             </x-filament::section>
         @endforeach

@@ -46,13 +46,13 @@ final class Importer
     {
         return [
             'phase' => $phase, 'cursor' => null, 'error' => '', 'started' => $phase === 'idle' ? null : now()->toIso8601String(), 'finished' => null,
-            'stats' => ['programs' => 0, 'stores_created' => 0, 'created' => 0, 'updated' => 0, 'unchanged' => 0, 'unmapped' => 0, 'expired' => 0, 'skipped' => 0],
+            'stats' => ['programs' => 0, 'stores_created' => 0, 'placeholders' => 0, 'created' => 0, 'updated' => 0, 'unchanged' => 0, 'unmapped' => 0, 'expired' => 0, 'skipped' => 0],
         ];
     }
 
     public static function running(array $s): bool
     {
-        return in_array($s['phase'], ['programs', 'offers', 'logos'], true);
+        return in_array($s['phase'], ['programs', 'directory', 'offers', 'logos'], true);
     }
 
     public static function start(string $network): array
@@ -94,8 +94,18 @@ final class Importer
                         $state['cursor'] = $next;
                         if ($next === null) {
                             self::syncAffiliateLinks(); // magazinele acceptate primesc linkul de afiliere
+                            $state['phase'] = Settings::get('placeholder_stores') ? 'directory' : 'offers';
                         }
-                        $state['phase'] = $next === null ? 'offers' : 'programs';
+                    } elseif ($state['phase'] === 'directory') {
+                        // Magazine-placeholder pentru programele la care nu suntem încă acceptați (ascunse până au oferte).
+                        [$items, $next] = $connector->directory($state['cursor']);
+                        foreach ($items as $p) {
+                            if (self::upsertProgram($p)) {
+                                $state['stats']['placeholders']++;
+                            }
+                        }
+                        $state['cursor'] = $next;
+                        $state['phase'] = $next === null ? 'offers' : 'directory';
                     } elseif ($state['phase'] === 'offers') {
                         [$items, $next] = $connector->offers($state['cursor']);
                         foreach ($items as $o) {
@@ -137,8 +147,9 @@ final class Importer
     {
         $program = Program::updateOrCreate(
             ['network' => $p->network, 'program_id' => $p->id],
-            ['name' => mb_substr($p->name, 0, 190), 'site_url' => mb_substr($p->url, 0, 255), 'accepted' => $p->accepted, 'last_seen' => now()]
+            ['name' => mb_substr($p->name, 0, 190), 'site_url' => mb_substr($p->url, 0, 255), 'accepted' => $p->accepted, 'relation' => $p->relation, 'last_seen' => now()]
                 + ($p->uniqueCode !== '' ? ['unique_code' => $p->uniqueCode] : [])
+                + ($p->allowsCoupons !== null ? ['allows_coupons' => $p->allowsCoupons] : [])
         );
         if ($program->store_id) {
             return false;
@@ -147,7 +158,8 @@ final class Importer
         // Asociere după domeniu, apoi creare automată.
         $store = self::matchByDomain($p->url) ?? Store::where('network', $p->network)->where('program_id', $p->id)->first();
         $created = false;
-        if (! $store && $p->accepted === true && Settings::get('auto_stores')) {
+        $placeholder = in_array($p->relation, ['pending', 'not_applied'], true) && Settings::get('placeholder_stores');
+        if (! $store && (($p->accepted === true && Settings::get('auto_stores')) || $placeholder)) {
             $name = trim(preg_replace('/\s+/u', ' ', strip_tags($p->name)) ?? '');
             $name = $name === mb_strtolower($name) ? Str::ucfirst($name) : $name; // „answear.ro” → „Answear.ro”; „eMAG.ro” rămâne
             $store = Store::create([
@@ -156,7 +168,8 @@ final class Importer
                 'logo_src' => $p->logo ?: null,
             ]);
             if ($p->category !== '') {
-                $cat = Category::firstOrCreate(['slug' => Str::slug($p->category)], ['name' => $p->category]);
+                [$catName, $catSlug] = Categories::ro($p->category);
+                $cat = Category::firstOrCreate(['slug' => $catSlug], ['name' => $catName]);
                 $store->categories()->syncWithoutDetaching([$cat->id]);
             }
             $created = true;
@@ -171,7 +184,8 @@ final class Importer
 
     /**
      * Magazinele cu program ACCEPTAT primesc linkul de afiliere (quicklink spre site-ul magazinului), folosit de
-     * „Mergi la magazin”, /go/{magazin} și de ofertele fără link propriu. Un link pus manual în admin nu e suprascris.
+     * „Mergi la magazin”, /go/{magazin} și de ofertele fără link propriu (plus ofertele cu link direct, preluate înainte
+     * de acceptare). Un link de afiliere pus manual în admin pe magazin nu e suprascris.
      * @return int câte magazine au primit link
      */
     public static function syncAffiliateLinks(): int
@@ -186,6 +200,17 @@ final class Importer
             }
             $store->update(['affiliate_url' => $connector->deeplink($store->url, (string) $program->program_id)]);
             $done++;
+        }
+
+        // Ofertele preluate înainte de acceptare au link direct spre magazin: trec și ele pe afiliere.
+        foreach ($programs as $program) {
+            $connector = self::connectors()[$program->network] ?? null;
+            if (! $connector) {
+                continue;
+            }
+            Coupon::withTrashed()->where('store_id', $program->store_id)->whereNotNull('affiliate_url')
+                ->where('affiliate_url', 'not like', '%event.2performant.com%')->get()
+                ->each(fn (Coupon $c) => $c->update(['affiliate_url' => $connector->deeplink($c->affiliate_url, (string) $program->program_id)]));
         }
 
         return $done;

@@ -50,6 +50,7 @@ final class Settings
             'recheck_days' => 30,
             'vote_min' => 5,
             'auto_stores' => true,
+            'placeholder_stores' => true,
             // 2Performant
             'tp_enabled' => true,
             'tp_email' => '',

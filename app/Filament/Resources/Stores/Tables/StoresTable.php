@@ -17,6 +17,8 @@ use Filament\Tables\Table;
 
 class StoresTable
 {
+    public const RELATIONS = ['accepted' => 'Acceptat', 'pending' => 'În așteptare', 'not_applied' => 'Neaplicat'];
+
     public static function configure(Table $table): Table
     {
         return $table
@@ -27,11 +29,22 @@ class StoresTable
                 TextColumn::make('active_count')->label('Oferte active')->sortable()->badge()
                     ->color(fn ($state) => $state > 0 ? 'success' : 'gray'),
                 TextColumn::make('network')->label('Rețea')->badge()->formatStateUsing(fn ($state) => Store::NETWORKS[$state] ?? $state),
+                TextColumn::make('program.relation')->label('Afiliere')->badge()
+                    ->formatStateUsing(fn ($state) => self::RELATIONS[$state] ?? '—')
+                    ->color(fn ($state) => match ($state) { 'accepted' => 'success', 'pending' => 'warning', default => 'gray' })
+                    ->description(fn (Store $r) => $r->program?->relation !== 'accepted' && $r->program?->allows_coupons === false ? 'nu acceptă site-uri de cupoane' : null),
                 TextInputColumn::make('home_order')->label('Ordine homepage')->type('number')->sortable()->width('8rem'),
                 TextColumn::make('updated_on')->label('Actualizat')->date('d.m.Y')->sortable(),
             ])
             ->filters([
                 SelectFilter::make('network')->label('Rețea')->options(Store::NETWORKS),
+                SelectFilter::make('relation')->label('Afiliere')->options(self::RELATIONS)
+                    ->query(fn ($query, array $data) => filled($data['value'] ?? null) ? $query->whereHas('program', fn ($p) => $p->where('relation', $data['value'])) : $query),
+                TernaryFilter::make('allows_coupons')->label('Acceptă site-uri de cupoane')
+                    ->queries(
+                        true: fn ($query) => $query->whereHas('program', fn ($p) => $p->where('allows_coupons', true)),
+                        false: fn ($query) => $query->whereHas('program', fn ($p) => $p->where('allows_coupons', false)),
+                    ),
                 TernaryFilter::make('has_offers')->label('Oferte active')
                     ->queries(
                         true: fn ($query) => $query->whereHas('coupons', fn ($c) => $c->active()),

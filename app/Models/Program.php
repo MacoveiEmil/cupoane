@@ -14,7 +14,7 @@ class Program extends Model
 
     protected function casts(): array
     {
-        return ['accepted' => 'boolean', 'last_seen' => 'datetime'];
+        return ['accepted' => 'boolean', 'allows_coupons' => 'boolean', 'last_seen' => 'datetime'];
     }
 
     public function store(): BelongsTo

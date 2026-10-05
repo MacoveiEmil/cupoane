@@ -87,8 +87,8 @@ class ImportOffers extends Page
         $st = $s['stats'];
 
         return sprintf(
-            'Programe: %d (%d magazine noi). Oferte: %d noi (ciorne), %d actualizate, %d neschimbate, %d la magazine neasociate, %d expirate, %d ignorate.',
-            $st['programs'], $st['stores_created'], $st['created'], $st['updated'], $st['unchanged'], $st['unmapped'], $st['expired'], $st['skipped']
+            'Programe acceptate: %d (%d magazine noi). Magazine-placeholder noi: %d (ascunse până au oferte). Oferte: %d noi (ciorne), %d actualizate, %d neschimbate, %d la magazine neasociate, %d expirate, %d ignorate.',
+            $st['programs'], $st['stores_created'], $st['placeholders'] ?? 0, $st['created'], $st['updated'], $st['unchanged'], $st['unmapped'], $st['expired'], $st['skipped']
         );
     }
 
