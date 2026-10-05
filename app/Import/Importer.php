@@ -92,6 +92,9 @@ final class Importer
                             }
                         }
                         $state['cursor'] = $next;
+                        if ($next === null) {
+                            self::syncAffiliateLinks(); // magazinele acceptate primesc linkul de afiliere
+                        }
                         $state['phase'] = $next === null ? 'offers' : 'programs';
                     } elseif ($state['phase'] === 'offers') {
                         [$items, $next] = $connector->offers($state['cursor']);
@@ -164,6 +167,28 @@ final class Importer
         }
 
         return $created;
+    }
+
+    /**
+     * Magazinele cu program ACCEPTAT primesc linkul de afiliere (quicklink spre site-ul magazinului), folosit de
+     * „Mergi la magazin”, /go/{magazin} și de ofertele fără link propriu. Un link pus manual în admin nu e suprascris.
+     * @return int câte magazine au primit link
+     */
+    public static function syncAffiliateLinks(): int
+    {
+        $done = 0;
+        $programs = Program::where('accepted', true)->whereNotNull('store_id')->whereNotNull('unique_code')->where('unique_code', '!=', '')->get();
+        foreach ($programs as $program) {
+            $store = Store::find($program->store_id);
+            $connector = self::connectors()[$program->network] ?? null;
+            if (! $store || ! $connector || trim((string) $store->affiliate_url) !== '' || trim((string) $store->url) === '') {
+                continue;
+            }
+            $store->update(['affiliate_url' => $connector->deeplink($store->url, (string) $program->program_id)]);
+            $done++;
+        }
+
+        return $done;
     }
 
     private static function matchByDomain(string $url): ?Store
