@@ -1,5 +1,7 @@
 # {NUME_SITE} — vouchere, reduceri și cupoane ({DOMENIU})
 
+> **Ramura `wordpress` — varianta inițială, oprită.** Site-ul activ e varianta Laravel, pe ramura `main` (vezi `docs/HANDOVER.md` și `docs/TRACKING.md` acolo). Ramura e păstrată pentru referință (tema `cupons-theme`, pluginul `cupons-core`, conectorul Profitshare).
+
 Site WordPress de cupoane pentru magazinele online din România, monetizat prin afiliere (2Performant, Profitshare).
 Prioritățile sunt **viteza** și **prospețimea**: nicio ofertă expirată pe site, pagini complet cacheabile, 3 requesturi la prima încărcare.
 
