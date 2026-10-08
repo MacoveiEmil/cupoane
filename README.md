@@ -10,6 +10,9 @@ Prioritățile sunt **viteza** (Lighthouse mobil 100) și **prospețimea** (nici
 - `resources/css/site.css`: tot CSS-ul (scris inline în pagină, minificat automat)
 - `public/js/site.js`: singurul JS (cod, voturi, sugestii de căutare)
 - `docs/DECIZII.md`: deciziile tehnice și motivele lor
+- **`docs/HANDOVER.md`**: predarea proiectului (start rapid, arhitectură, conturi, unde e fiecare lucru)
+- **`docs/TRACKING.md`**: ce s-a făcut și ce urmează (de actualizat la fiecare commit important)
+- `docs/CHECKLIST.md`: lista de lansare · `docs/BRIEF.md`: brief pentru verificare externă
 
 ---
 
@@ -18,8 +21,10 @@ Prioritățile sunt **viteza** (Lighthouse mobil 100) și **prospețimea** (nici
 Cerințe: Docker Desktop (motorul WSL 2 pe Windows).
 
 ```bash
+cp .env.example .env   # apoi, pentru local: APP_ENV=local, APP_DEBUG=true, APP_URL=http://localhost:8080
 docker compose up -d --build
 docker compose exec app composer install
+docker compose exec app php artisan key:generate
 docker compose exec app php artisan migrate --seed
 docker compose exec app php artisan storage:link
 ```
